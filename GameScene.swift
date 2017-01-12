@@ -9,6 +9,7 @@
 import SpriteKit
 import GameplayKit
 import Darwin
+import AVFoundation
 
 struct PhysicsCategory {
     static let bird1 : UInt32 = 0x1 << 1
@@ -46,13 +47,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var gameOverText = UILabel()
     var bird = SKSpriteNode()
     var exitButton = UIButton()
-    
+    var player: AVAudioPlayer?
 
     override func didMove(to view: SKView) {
         getItTogether()
     }
 
     func getItTogether(){
+        HighScore()
+        HighScoreWrite()
         // setup physics
         self.physicsWorld.gravity = CGVector( dx: 0.0, dy: -4.0 )
         self.physicsWorld.contactDelegate = self
@@ -234,18 +237,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
 
     }
 
+
+
     func gameOverMethod() {
+
         self.removeAllChildren()
         self.removeAllActions()
         replay.isHidden = true
+        let s1: AVAudioPlayer = playSound()
+        s1.numberOfLoops = -1
+        s1.play()
         backgroundColor = UIColor.init(red: 0, green: 0, blue: 200/255, alpha: 255/255)
-//        gameOverText.removeFromSuperview()
-//        gameOverText = UILabel(frame: CGRect(x: self.size.width/2 - 200, y: self.size.height/2 - 50, width: 400, height: 30))
-//        gameOverText.textAlignment = .center
-//        gameOverText.textColor = UIColor.init(red: 1, green: 1, blue: 0, alpha: 255/255)
-//        gameOverText.font = UIFont.init(name: "Georgia-Italic", size: 30)
-//        gameOverText.text = "Game Over"
-//        self.view?.addSubview(gameOverText)
         labelHiScore.removeFromSuperview()
         labelHiScore.textAlignment = .center
         labelHiScore = UILabel(frame: CGRect(x: self.size.width/2 - 150, y: self.size.height/10 , width: 300, height: 30))
@@ -270,7 +272,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         InjuredBird.physicsBody?.allowsRotation = false
         InjuredBird.physicsBody?.affectedByGravity = false
         self.addChild(InjuredBird)
-
         //add Replay button
         replay = UIButton(frame: CGRect(x: self.size.width/7 , y: self.size.height/2 + self.size.height/14 , width: 200, height: 50))
         replay.setTitleColor( UIColor.green, for: .normal)
@@ -414,77 +415,57 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     }
 
 
-//    func HighScore() {
-//        let scoreDictionary = "scorea"
-//        let highScore = [scoreDictionary]
-//        let fileManager = FileManager.defaultManager()
-//        let documentsURL = fileManager.URLsForDirectory(NSSearchPath.Directory.DocumentDirectory, inDomains:NS))
-//
-//    }
+    func playSound() -> AVAudioPlayer {
+        guard let sound = NSDataAsset(name: "latinHorn") else {
+            print("sound asset not found")
+            return player!
+        }
 
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
+
+           // player!.play()
+        } catch let error as NSError {
+            print("error: \(error.localizedDescription)")
+        }
+        return player!
+    }
+
+   func HighScore() {
+
+    if let filepath = Bundle.main.path(forResource: "HighScore", ofType: "strings") {
+        do {
+            let contents = try String(contentsOfFile: filepath)
+            print(contents)
+        } catch {
+            print("Contents could not be loaded")
+        }
+    } else {
+        // example.txt not found!
+        print("example.txt not found!")
+    }
 }
 
-//class HighScoreManager {
-//
-//
-//        var documentsURL: NSURL?
-//        var fileURL:NSURL?
-//
-//        func setFileURL(file: String) {
-//            documentsURL = FileManager.defaultManager().URLsForDirectory(.documentDirectory, inDomains: .UserDomainMask)[0] as NSURL?
-//            fileURL = documentsURL!.appendingPathComponent(file) as NSURL?
-//
-//        }
-//
-//        func write(file: String, mDict: [String:String]) {
-//            setFileURL(file)
-//            let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(mDict)
-//            if let fileAssigend = fileURL {
-//                data.writeToURL(fileAssigend, atomically: true)
-//            }
-//        }
-//
-//        func read(file: String, mDict: inout [String:String]) {
-//            setFileURL(file)
-//
-//            var data:NSData?
-//            if let url = fileURL {
-//                data =  NSData(contentsOfURL: url as URL)
-//                if let result = data {
-//                    mDict = NSKeyedUnarchiver.unarchiveObjectWithData(result) as! [String:String]
-//                }
-//            }
-//
-//        }
-//
-//        // Below with NSObject
-//        func write(file: String, mDict: NSObject) {
-//            setFileURL(file)
-//            let data : NSData = NSKeyedArchiver.archivedData(withRootObject: mDict)
-//            if let fileAssigend = fileURL {
-//                data.write(to: fileAssigend as URL, atomically: true)
-//            }
-//        }
-//
-//        func read(file: String, mDict: inout NSObject) {
-//            setFileURL(file: file)
-//
-//            var data:NSData?
-//            if let url = fileURL {
-//                data =  NSData(contentsOf: url as URL)
-//                if let result = data {
-//                    mDict = NSKeyedUnarchiver.unarchiveObject(with: result as Data) as! NSObject
-//                }
-//            }
-//            
-//        }
-//        
-//    }
+    func HighScoreWrite() {
 
-
-
-
-
+//        let fileName = "HighScore"
+//        let DocumentDirURL = try! FileManager.default.url(for: .DocumentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+//
+//        let fileURL = DocumentDirURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension("strings")
+//        print("FilePath: \(fileURL.path)")
+//
+//        let writeString = "Write this text to the fileURL as text in iOS using Swift"
+//        do {
+//            // Write to the file
+//            try writeString.writeToURL(fileURL, atomically: true, encoding: NSUTF8StringEncoding)
+//        } catch let error as NSError {
+//            print("Failed writing to URL: \(fileURL), Error: " + error.localizedDescription)
+//        }
+//}
+}
 
 // background red
 class GameScene2: SKScene{
