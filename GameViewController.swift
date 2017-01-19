@@ -9,15 +9,13 @@
 import UIKit
 import SpriteKit
 import GameplayKit
-
+import AVFoundation
 
 class GameViewController: UIViewController {
 
-    @IBOutlet weak var vogelLable: UILabel!
 
-    @IBOutlet weak var background: SKView!
-    @IBOutlet weak var highScoreLabel: UILabel!
-
+    var player: AVAudioPlayer?
+    var s1: AVAudioPlayer?
     @IBOutlet var backgroundRed: [SKView]!
     override var prefersStatusBarHidden: Bool {
         return true
@@ -32,31 +30,11 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = true
         scene.scaleMode = .resizeFill
         skView.presentScene(scene)
-        
-
+        s1 = scene.playSound()
+        s1?.numberOfLoops = -1
+        //s1?.play()
     }
-var buttt = false
-
-    @IBAction func fly(_ sender: UIButton) {
-
-        vogelLable.removeFromSuperview()
-        highScoreLabel.removeFromSuperview()
-        sender.removeFromSuperview()
-        let scene = GameScene(size: view.bounds.size)
-        let skView = view as! SKView
-        skView.showsFPS = true
-        skView.showsNodeCount = true
-        skView.ignoresSiblingOrder = true
-        scene.scaleMode = .resizeFill
-        skView.presentScene(scene)
-        buttt = true
-           }
-
-    @IBOutlet var skdlj: SKView!
-    @IBAction func tap2s(_ sender: UITapGestureRecognizer) {
-        print("sdjfkj")
-    }
-    }
+}
 
 
 
