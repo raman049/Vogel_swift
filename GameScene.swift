@@ -62,7 +62,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
 
     func getItTogether(){
         // setup physics
-        self.physicsWorld.gravity = CGVector( dx: 0.0, dy: -3.0 )
+        self.physicsWorld.gravity = CGVector( dx: 0.0, dy: -2.0 )
         self.physicsWorld.contactDelegate = self
         backgroundColor = UIColor.init(red: 153/255, green: 204/255, blue: 1, alpha: 1.0)
         pause1 = true
@@ -107,7 +107,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         labelHiScore = UILabel(frame: CGRect(x: self.size.width/2 - 100, y: self.size.height/5 - 10, width: 200, height: 30))
         labelHiScore.textAlignment = .center
         labelHiScore.textColor = UIColor.red
-        labelHiScore.font = UIFont.init(name: "Georgia-Italic", size: 20)
+        labelHiScore.font = UIFont.init(name: "MarkerFelt-Thin", size: 20)
         let userDefaults = UserDefaults.standard
         let highscore3 = userDefaults.value(forKey: "highscore")
         labelHiScore.text = "High Score:   \(highscore3!)"
@@ -118,21 +118,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         // taptoStart.center = CGPoint(x: self.size.width/2, y: self.size.height/5)
         taptoStart.textAlignment = .center
         taptoStart.textColor = UIColor.yellow
-        taptoStart.font = UIFont.init(name: "Georgia-Italic", size: 75)
+        taptoStart.font = UIFont.init(name: "MarkerFelt-Thin", size: 75)
         taptoStart.text = "Tap To Start"
         self.view?.addSubview(taptoStart)
-        scoreLabel = UILabel(frame: CGRect(x: self.size.width - 100, y: self.size.height - self.size.height/10 , width: 100, height: 30))
-        scoreLabel.textAlignment = .left
-        scoreLabel.textColor = UIColor.red
-        scoreLabel.font = UIFont.init(name: "Georgia-Italic", size: 20)
 
 
-        //add Bird
+              //add Bird
         bird = SKSpriteNode(imageNamed: "bird1")
         let birdSz = CGSize(width: bird.size.width/4, height: bird.size.height/4)
+        let birdPhysicsSz = CGSize(width: bird.size.width/5, height: bird.size.height/5)
         bird.scale(to: birdSz)
-        bird.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
-        bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.width/8)
+        bird.position = CGPoint(x: self.size.width/3, y: self.size.height/2 - 10 )
+        bird.physicsBody = SKPhysicsBody(rectangleOf: birdPhysicsSz)
         bird.physicsBody?.isDynamic = true
         bird.zPosition = 2
         bird.physicsBody?.allowsRotation = false
@@ -182,11 +179,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
          Thread.sleep(forTimeInterval: 0.5)
         }
         bird.texture = SKTexture(imageNamed:"bird2")
-        scoreLabel.text = "Score:  \(scoreInt)"
-        self.view?.addSubview(scoreLabel)
+        // add highscore
         labelHiScore.removeFromSuperview()
         labelHiScore.textAlignment = .left
-        labelHiScore = UILabel(frame: CGRect(x: self.size.width/14 , y: self.size.height - self.size.height/10 , width: 300, height: 30))
+        labelHiScore = UILabel(frame: CGRect(x: self.size.width/90 , y: self.size.height - self.size.height/10 , width: 300, height: 30))
         labelHiScore.font = UIFont.init(name: "Georgia-Italic", size: 20)
         labelHiScore.textColor = UIColor.red
         let userDefaults = UserDefaults.standard
@@ -194,20 +190,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         labelHiScore.text = "High Score: \(highscore4!)"
         self.view?.addSubview(labelHiScore)
 
+        //add score
+        scoreLabel.removeFromSuperview()
+        scoreLabel = UILabel(frame: CGRect(x: self.size.width - self.size.width/6 , y: self.size.height - self.size.height/10 , width: 100, height: 30))
+        scoreLabel.textAlignment = .left
+        scoreLabel.textColor = UIColor.red
+        scoreLabel.font = UIFont.init(name: "Georgia-Italic", size: 20)
+        scoreLabel.text = "Score: \(scoreInt)"
+        self.view?.addSubview(scoreLabel)
+
         if started == false {
             started = true
             taptoStart.isHidden = true
             bird.physicsBody?.affectedByGravity = true
             //creates a block
+//move and remove jet
+            let removeFromParent = SKAction.removeFromParent()
+            let distance = CGFloat(self.frame.width  + jetpair.frame.width + 150 )
             let movingJet = SKAction.run({
                 () in
                 self.addjets()
-                self.addCloud()
             })
             let delay = SKAction.wait(forDuration: 2)   //interval between jets
             let addJetDelay = SKAction.sequence ([movingJet, delay])
             let addJetForever = SKAction.repeatForever(addJetDelay)
             self.run(addJetForever)
+            let movePlane = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(0.005 * distance ))
+            moveAndRemove = SKAction.sequence([movePlane, removeFromParent])
+//move and remove cloud
+            let movingCloud = SKAction.run({
+                () in
+                self.addCloud()
+            })
+            let delayCloud = SKAction.wait(forDuration: 2.5)   //interval between jets
+            let addCloudDelay = SKAction.sequence ([movingCloud, delayCloud])
+            let addCloudForever = SKAction.repeatForever(addCloudDelay)
+            self.run(addCloudForever)
+            let moveCloud = SKAction.moveBy(x: distance , y:0, duration: TimeInterval(0.0099 * distance ))
+            moveAndRemoveCloud = SKAction.sequence([moveCloud, removeFromParent])
+//move and remove ship
             let movingShip = SKAction.run({
                 () in
                 self.addShip()
@@ -216,22 +237,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let addShipDelay = SKAction.sequence ([movingShip, delay2])
             let addShipForever = SKAction.repeatForever(addShipDelay)
             self.run(addShipForever)
-            let distance = CGFloat(self.frame.width  + jetpair.frame.width + 150 )
-            let movePlane = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(0.005 * distance ))
-            let moveCloud = SKAction.moveBy(x: distance , y:0, duration: TimeInterval(0.009 * distance ))
             let moveShip = SKAction.moveBy(x: distance , y:0, duration: TimeInterval(0.02 * distance ))
-            let removePlane = SKAction.removeFromParent()
-            moveAndRemove = SKAction.sequence([movePlane, removePlane])
-            moveAndRemoveCloud = SKAction.sequence([moveCloud, removePlane])
-            moveAndRemoveShip = SKAction.sequence([moveShip, removePlane])
+            moveAndRemoveShip = SKAction.sequence([moveShip, removeFromParent])
+
             bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1))
+            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 5))
         }else{
             if gameOver == true {
                 gameOverMethod()
             }else{
             bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1))
+            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 5))
             }
         }
 
@@ -342,13 +358,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
 
     func addjets(){
         jetpair = SKNode()
-        let plane = SKSpriteNode(imageNamed: "plane")
-        let planeSz = CGSize(width: plane.size.width/4 , height: plane.size.height/4)
-        plane.scale(to: planeSz)
+        let plane = SKSpriteNode(imageNamed: "plane1")
         let randomPosition2 = CGFloat(arc4random_uniform(250))
-        plane.position = CGPoint(x: self.size.width + 10 + plane.size.width/2 , y: 100 + randomPosition2 )
-        plane.physicsBody = SKPhysicsBody(rectangleOf: planeSz)
-        plane.physicsBody = SKPhysicsBody(circleOfRadius: plane.size.height / 8.0)
+        let planeSz = CGSize(width: plane.size.width/3 , height: plane.size.height/3)
+        let planePhysicsSz = CGSize(width: plane.size.width/4 , height: plane.size.height/6)
+        plane.scale(to: planeSz)   
+        plane.position = CGPoint(x: self.size.width + 100 + plane.size.width/3 , y: 100 + randomPosition2 )
+        plane.physicsBody = SKPhysicsBody(rectangleOf: planePhysicsSz)
         plane.physicsBody?.affectedByGravity = false
         plane.physicsBody?.categoryBitMask = PhysicsCategory.plane
         plane.physicsBody?.isDynamic = true
@@ -359,16 +375,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         jetpair.run(moveAndRemove)
         self.addChild(jetpair)
 
+    
     }
 
     func addCloud(){
         cloudNode = SKNode()
         let cloud = SKSpriteNode(imageNamed: "Cloud")
-        let cloudSz = CGSize(width: cloud.size.width/4 , height: cloud.size.height/4)
-        cloud.scale(to: cloudSz)
+        let cloudImageSz = CGSize(width: cloud.size.width/3 , height: cloud.size.height/4)
+        let cloudPhysicsSz = CGSize(width: cloud.size.width/4 , height: cloud.size.height/6)
         let randomPosition2 = CGFloat(arc4random_uniform(UInt32((Float)(self.size.height/6))))
-        cloud.position = CGPoint(x:cloud.size.width/2 - 25 , y: self.size.height  - randomPosition2 )
-        cloud.physicsBody = SKPhysicsBody(rectangleOf: cloudSz)
+        cloud.scale(to: cloudImageSz)
+        cloud.position = CGPoint(x:cloud.size.width/2 - 100 , y: self.size.height  - randomPosition2 )
+        cloud.physicsBody = SKPhysicsBody(rectangleOf: cloudPhysicsSz)
         cloud.physicsBody?.affectedByGravity = false
         cloud.physicsBody?.isDynamic = true
         cloud.physicsBody?.categoryBitMask = PhysicsCategory.cloud
@@ -382,11 +400,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     func addShip(){
         shipNode = SKNode()
         let ship = SKSpriteNode(imageNamed: "ship")
-        let shipSz = CGSize(width: ship.size.width/2 , height: ship.size.height/4)
+        let shipSz = CGSize(width: ship.size.width/2 , height: ship.size.height/3)
+        let shipPhysicsSz = CGSize(width: ship.size.width/3 , height: ship.size.height/7)
         ship.scale(to: shipSz)
         let randomPosition2 = CGFloat(arc4random_uniform(8))
         ship.position = CGPoint(x:ship.size.width/2 - 50 , y: 70 + randomPosition2 )
-        ship.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: ship.size.width/2 , height: ship.size.height/8))
+        ship.physicsBody = SKPhysicsBody(rectangleOf:shipPhysicsSz)
         ship.physicsBody?.affectedByGravity = false
         ship.physicsBody?.categoryBitMask = PhysicsCategory.ship
         ship.physicsBody?.isDynamic = true
@@ -561,38 +580,37 @@ class GameScene2: SKScene{
         //red background
           backgroundColor = UIColor.init(red: 1, green: 0, blue: 0.0, alpha: 1.0)
         //vogel label
-        labelVogel = UILabel(frame: CGRect(x: self.size.width/2 - 100, y: self.size.height/5 - 10, width: 200, height: 30))
+        labelVogel = UILabel(frame: CGRect(x: self.size.width/2 - 250 , y: self.size.height/8, width: 500, height: 150))
         labelVogel.textAlignment = .center
-        labelVogel.textColor = UIColor.black
-        labelVogel.font = UIFont.init(name: "Georgia-Italic", size: 50)
+        labelVogel.textColor = UIColor.blue
+        labelVogel.font = UIFont.init(name: "MarkerFelt-Thin", size: 150)
         labelVogel.text = "VOGEL"
         self.view?.addSubview(labelVogel)
         // add highscore
-        labelHiScore2 = UILabel(frame: CGRect(x: self.size.width/2 - 100, y: self.size.height - self.size.height/5 , width: 200, height: 30))
+        labelHiScore2 = UILabel(frame: CGRect(x: self.size.width/2 - 150, y: self.size.height - self.size.height/5 , width: 300, height: 30))
         labelHiScore2.textAlignment = .center
-        labelHiScore2.textColor = UIColor.black
-        labelHiScore2.font = UIFont.init(name: "Georgia-Italic", size: 20)
+        labelHiScore2.textColor = UIColor.yellow
+        labelHiScore2.font = UIFont.init(name: "MarkerFelt-Thin", size: 25)
         let userDefaults = UserDefaults.standard
         let highscore3 = userDefaults.value(forKey: "highscore")
-        labelHiScore2.text = "High Score:   \(highscore3!)"
+        labelHiScore2.text = "High Score: \(highscore3!)"
         self.view?.addSubview(labelHiScore2)
         // add fly button
-        playButton = UIButton(frame: CGRect(x: self.size.width/2 - 100, y: self.size.height/2 + self.size.height/14 , width: 200, height: 50))
+        playButton = UIButton(frame: CGRect(x: self.size.width/2 - 60 , y: self.size.height/2 + 10 , width: 120, height: 25))
         playButton.setTitleColor( UIColor.green, for: .normal)
-        playButton.titleLabel?.font = UIFont.init(name: "Georgia-Italic", size: 25)
+        playButton.titleLabel?.font = UIFont.init(name: "MarkerFelt-Thin", size: 25)
+        playButton.titleLabel?.textColor = UIColor.green
         playButton.setTitle("Play", for: .normal)
         playButton.addTarget(self, action: #selector(GameScene2.page1), for: .touchUpInside)
         self.view?.addSubview(playButton)
 
-
-
-        
         let s1: AVAudioPlayer = playSound()
         s1.numberOfLoops = -1
        // s1.play()
 
     }
     func page1(){
+        Thread.sleep(forTimeInterval: 0.5)
         let scene = GameScene(size: (view?.bounds.size)!)
         let skView = self.view
         skView?.showsFPS = true
