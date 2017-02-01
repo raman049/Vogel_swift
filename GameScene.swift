@@ -8,8 +8,10 @@
 
 import SpriteKit
 import GameplayKit
+import GameKit
 import Darwin
 import AVFoundation
+import Social
 
 struct PhysicsCategory {
     static let bird : UInt32 = 0x1 << 1
@@ -19,36 +21,43 @@ struct PhysicsCategory {
     static let cloud : UInt32 = 0x1 << 5
     static let shark : UInt32 = 0x1 << 6
     static let lightning : UInt32 = 0x1 << 7
-    static let InjuredBird : UInt32 = 0x1 << 8
+    static let tree : UInt32 = 0x1 << 8
+
 }
 
-class GameScene: SKScene, SKPhysicsContactDelegate  {
+class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate  {
 
     var bird2 = SKSpriteNode()
     var bird1 = SKSpriteNode()
     var bird = SKSpriteNode()
     var lightning = SKSpriteNode()
+    var fruit = SKSpriteNode()
     var boom = SKSpriteNode()
     var shark = SKSpriteNode()
     var fly = SKSpriteNode()
+    var wavea = SKSpriteNode()
     var jetpair = SKNode()
     var cloudNode = SKNode()
     var shipNode = SKNode()
     var sharkNode = SKNode()
     var flyNode = SKNode()
+    var treeNode = SKNode()
+    var waveNode = SKNode()
     var started = Bool()
     var gameOver = Bool()
-//    var pause1 = Bool()
-//    var pause2 = Bool()
     var birdHitCloud = Bool()
     var birdHitWave = Bool()
     var birdHitJet = Bool()
     var birdHitFly = Bool()
+    var birdHitTree = Bool()
+    var fruitBonus = Bool()
     var moveAndRemove = SKAction()
     var moveAndRemoveCloud = SKAction()
     var moveAndRemoveShip = SKAction()
     var moveAndRemoveShark = SKAction()
     var moveAndRemoveFly = SKAction()
+    var moveAndRemoveTree = SKAction()
+    var moveAndRemoveWave = SKAction()
     var labelHiScore = UILabel()
     var labelScore = UILabel()
     var taptoStart = UILabel()
@@ -59,7 +68,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var scoreInt = 0
     var replay = UIButton()
     var gameOverText = UILabel()
-    var exitButton = UIButton()
+    var gcButton = UIButton()
     var player: AVAudioPlayer?
     var playerLight: AVAudioPlayer?
     var playerBubble: AVAudioPlayer?
@@ -68,13 +77,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var latinhorn: AVAudioPlayer?
     var count1: CGFloat = CGFloat(0)
     override func didMove(to view: SKView) {
+         authPlayer()
         getItTogether()
 
     }
 
     func getItTogether(){
         // setup physics
-        self.physicsWorld.gravity = CGVector( dx: 0.0, dy: -2.0 )
+        self.physicsWorld.gravity = CGVector( dx: 0.0, dy: -2 )
         self.physicsWorld.contactDelegate = self
         backgroundColor = UIColor.init(red: 153/255, green: 204/255, blue: 1, alpha: 1.0)
         //play island sound
@@ -82,21 +92,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         soundIsland?.numberOfLoops = -1
         soundIsland?.play()
         //add waves
-        let wavea = SKSpriteNode(imageNamed: "wave2")
+        wavea = SKSpriteNode(imageNamed: "wave2")
         let waveb = SKSpriteNode(imageNamed: "wave2")
         let wavec = SKSpriteNode(imageNamed: "wave2")
         let waved = SKSpriteNode(imageNamed: "wave2")
         let wavee = SKSpriteNode(imageNamed: "wave2")
-        let waveSz = CGSize(width: wavea.size.width/3, height: wavea.size.height/3)
+        let wavef = SKSpriteNode(imageNamed: "wave2")
+        let waveSz = CGSize(width: wavea.size.width, height: wavea.size.height)
         wavea.scale(to: waveSz)
         wavea.position = CGPoint(x: (Int) (wavea.size.width/2)  , y: (Int)(wavea.size.height/3))
         addChild(wavea)
         waveb.scale(to: waveSz)
         waveb.position = CGPoint(x: (Int) (wavea.size.width/2) * 3 - 5 , y: (Int) (wavea.size.height/3))
         addChild(waveb)
-        wavec.scale(to: waveSz)
-        wavec.zPosition = 2
-        wavec.physicsBody?.isDynamic = false
         wavec.scale(to: waveSz)
         wavec.position = CGPoint(x: (Int) (wavea.size.width/2) * 5 - 10 , y: (Int) (wavea.size.height/3))
         addChild(wavec)
@@ -106,10 +114,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         wavee.scale(to: waveSz)
         wavee.position = CGPoint(x: (Int) (wavea.size.width/2) * 9 - 30 , y: (Int) (wavea.size.height/3))
         addChild(wavee)
-
-        //add sun
+        wavef.scale(to: waveSz)
+        wavef.position = CGPoint(x: (Int) (wavea.size.width/2) * 11 - 40 , y: (Int) (wavea.size.height/3))
+        addChild(wavef)
+    //add SUn
         let sun = SKSpriteNode(imageNamed: "sun")
-        let sunSz = CGSize(width: 50 , height: 50)
+        let sunSz = CGSize(width: sun.size.width/2 , height: sun.size.height/2)
         sun.scale(to: sunSz)
         sun.zRotation = CGFloat(M_PI/2.0)
         sun.anchorPoint = CGPoint(x:CGFloat(0.5),y:CGFloat(0.5))
@@ -118,7 +128,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         let spinForever = SKAction.repeatForever(spin)
         sun.run(spinForever)
         addChild(sun)
-
         //add HighScore
         labelHiScore = UILabel(frame: CGRect(x: self.size.width/2 - 100, y: self.size.height/5 - 10, width: 200, height: 30))
         labelHiScore.textAlignment = .center
@@ -141,8 +150,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
 
         //add Bird
         bird = SKSpriteNode(imageNamed: "bird1")
-        let birdSz = CGSize(width: bird.size.width/4, height: bird.size.height/4)
-        let birdPhysicsSz = CGSize(width: bird.size.width/6, height: bird.size.height/6)
+        let birdSz = CGSize(width: (bird.size.width/3) * 2, height: (bird.size.height/3) * 2)
+        let birdPhysicsSz = CGSize(width: bird.size.width/3, height: bird.size.height/3)
         bird.scale(to: birdSz)
         bird.position = CGPoint(x: self.size.width/3, y: self.size.height/2 - 10 )
         bird.physicsBody = SKPhysicsBody(rectangleOf: birdPhysicsSz)
@@ -160,13 +169,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     override func update(_ currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
         if started == true && gameOver == false {
-            if bird.position.y < self.size.height/8 { //bird hit water
+            if bird.position.y < wavea.size.height { //bird hit water
                 birdHitWave = true
             }
             if bird.position.y > self.size.height{   // bird touches sky
                // birdHitCloud = true
                 bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-                bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: -5))
+                bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: -2))
             }
         }
         if (birdHitCloud){
@@ -189,6 +198,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let soudHitJet: AVAudioPlayer = playBoom()
             soudHitJet.play()
             Timer.scheduledTimer(timeInterval: TimeInterval(0.7), target: self, selector: #selector(GameScene.gameOverMethod), userInfo: nil, repeats: false)
+        }
+        if birdHitTree == true {
+            addFruit()
+            scoreInt = scoreInt + 500
+            fruitBonus = true
+            addBonus()
+            birdHitTree = false
         }
         if birdHitFly == true{
             scoreInt = scoreInt + 10
@@ -249,16 +265,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             self.run(addFlyForever)
             let moveFly = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(20))
             moveAndRemoveFly = SKAction.sequence([moveFly, removeFromParent])
+//move and remove tree
+            let movingTree = SKAction.run({
+                () in
+                self.addTree()
+            })
+            let delayTree = SKAction.wait(forDuration: 2)   //interval between jets
+            let addTreeDelay = SKAction.sequence ([movingTree, delayTree])
+            let addTreeForever = SKAction.repeatForever(addTreeDelay)
+            self.run(addTreeForever)
+            let moveTree = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(3))
+            moveAndRemoveTree = SKAction.sequence([moveTree, removeFromParent])
+
 //move and remove cloud
             let movingCloud = SKAction.run({
                 () in
                 self.addCloud()
             })
-            let delayCloud = SKAction.wait(forDuration: 5)   //interval between jets
+            let delayCloud = SKAction.wait(forDuration: 9)   //interval between jets
             let addCloudDelay = SKAction.sequence ([movingCloud, delayCloud])
             let addCloudForever = SKAction.repeatForever(addCloudDelay)
             self.run(addCloudForever)
-            let moveCloud = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(9))
+            let moveCloud = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(14))
             moveAndRemoveCloud = SKAction.sequence([moveCloud, removeFromParent])
 //move and remove ship
             let movingShip = SKAction.run({
@@ -272,11 +300,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let moveShip = SKAction.moveBy(x: distance , y:0, duration: TimeInterval(50))
             moveAndRemoveShip = SKAction.sequence([moveShip, removeFromParent])
 
+//move and remove Wave
+            let movingwave = SKAction.run({
+                () in
+                self.addWavea()
+                self.addWaveb()
+                self.addWavec()
+                self.addWaved()
+                self.addWavee()
+            })
+            let delayWave = SKAction.wait(forDuration: 0.3)   //interval between jets
+            let addWaveDelay = SKAction.sequence ([movingwave, delayWave])
+            let addWaveForever = SKAction.repeatForever(addWaveDelay)
+            self.run(addWaveForever)
+            let moveWave = SKAction.moveBy(x: 200 , y: 0, duration: TimeInterval(1))
+            moveAndRemoveWave = SKAction.sequence([moveWave, removeFromParent])
+
             bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 7))
+            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 3))
         }else{
             bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 7))
+            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 3))
 
         }
 
@@ -342,7 +386,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
 
 
         let InjuredBird = SKSpriteNode(imageNamed: "InjuredBird")
-        let InjuredBirdSz = CGSize(width: InjuredBird.size.width, height: InjuredBird.size.height)
+        let InjuredBirdSz = CGSize(width: InjuredBird.size.width * 3, height: InjuredBird.size.height * 3)
         InjuredBird.scale(to: InjuredBirdSz)
         InjuredBird.position = CGPoint(x: self.size.width/2, y: self.size.height/3)
         InjuredBird.physicsBody?.isDynamic = false
@@ -359,13 +403,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         self.view?.addSubview(replay)
 
         //add Exit button
-        exitButton.removeFromSuperview()
-         exitButton = UIButton(frame: CGRect(x: self.size.width/2 + self.size.width/6, y: self.size.height/2 + self.size.height/14 , width: 200, height: 50))
-        exitButton.setTitleColor( UIColor.green, for: .normal)
-        exitButton.titleLabel?.font = UIFont.init(name: "Georgia-Italic", size: 25)
-        exitButton.setTitle("Exit", for: .normal)
-        exitButton.addTarget(self, action: #selector(GameScene.exit), for: .touchUpInside)
-        self.view?.addSubview(exitButton)
+        gcButton.removeFromSuperview()
+         gcButton = UIButton(frame: CGRect(x: self.size.width/2 + self.size.width/6, y: self.size.height/2 + self.size.height/14 , width: 200, height: 50))
+        gcButton.setTitleColor( UIColor.green, for: .normal)
+        gcButton.titleLabel?.font = UIFont.init(name: "Georgia-Italic", size: 25)
+        gcButton.setTitle("Game center", for: .normal)
+        gcButton.addTarget(self, action: #selector(GameScene.showFacebook), for: .touchUpInside)
+        self.view?.addSubview(gcButton)
     }
 
     func exit()
@@ -378,8 +422,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         self.removeAllChildren()
         self.removeAllActions()
         self.removeFromParent()
-        exitButton.isEnabled = true
-        exitButton.removeFromSuperview()
+        gcButton.isEnabled = true
+        gcButton.removeFromSuperview()
         gameOverText.isEnabled = false
         gameOverText.removeFromSuperview()
         scoreLabel.removeFromSuperview()
@@ -396,11 +440,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     func addjets(){
         jetpair = SKNode()
         let plane = SKSpriteNode(imageNamed: "plane1")
-        let randomPosition2 = CGFloat(arc4random_uniform(250))
-        let planeSz = CGSize(width: plane.size.width/3 , height: plane.size.height/3)
-        let planePhysicsSz = CGSize(width: plane.size.width/5 , height: plane.size.height/7)
+        let heighta = self.size.height - wavea.size.height * 2
+        let randomPosition2 = CGFloat(arc4random_uniform(UInt32(heighta)))
+        let planeSz = CGSize(width: plane.size.width * 6/5 , height: plane.size.height * 6/5 )
+        let planePhysicsSz = CGSize(width: plane.size.width/2 , height: plane.size.height/4)
         plane.scale(to: planeSz)   
-        plane.position = CGPoint(x: self.size.width + randomPosition2 + plane.size.width/3 , y: 100 + randomPosition2 )
+        plane.position = CGPoint(x: self.size.width + 50 + plane.size.width/3 , y: wavea.size.height + randomPosition2 )
         plane.physicsBody = SKPhysicsBody(rectangleOf: planePhysicsSz)
         plane.physicsBody?.affectedByGravity = false
         plane.physicsBody?.categoryBitMask = PhysicsCategory.plane
@@ -418,7 +463,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     func addCloud(){
         cloudNode = SKNode()
         let cloud = SKSpriteNode(imageNamed: "Cloud")
-        let cloudImageSz = CGSize(width: cloud.size.width/2 , height: cloud.size.height/3)
+        let cloudImageSz = CGSize(width: cloud.size.width/2 , height:cloud.size.height/2)
         let cloudPhysicsSz = CGSize(width: cloud.size.width/4 , height: cloud.size.height/6)
         let randomPosition2 = CGFloat(arc4random_uniform(UInt32((Float)(self.size.height/6))))
         cloud.scale(to: cloudImageSz)
@@ -436,12 +481,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     }
     func addShip(){
         shipNode = SKNode()
-        let ship = SKSpriteNode(imageNamed: "ship")
-        let shipSz = CGSize(width: ship.size.width/2 , height: ship.size.height/3)
-        let shipPhysicsSz = CGSize(width: ship.size.width/3 , height: ship.size.height/12)
+        let ship = SKSpriteNode(imageNamed: "ship2")
+        let shipSz = CGSize(width: ship.size.width * 3/2 , height: ship.size.height * 3/2)
+        let shipPhysicsSz = CGSize(width: ship.size.width , height: ship.size.height/3)
         ship.scale(to: shipSz)
-        let randomPosition2 = CGFloat(arc4random_uniform(8))
-        ship.position = CGPoint(x:ship.size.width/2 - 250 , y: 70 + randomPosition2 )
+        ship.position = CGPoint(x:ship.size.width/2 - 250 , y: 95 )
         ship.physicsBody = SKPhysicsBody(rectangleOf:shipPhysicsSz)
         ship.physicsBody?.affectedByGravity = false
         ship.physicsBody?.categoryBitMask = PhysicsCategory.ship
@@ -455,12 +499,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     }
     func addFly(){
         flyNode = SKNode()
-        let fly = SKSpriteNode(imageNamed: "fly")
-        let flySz = CGSize(width: fly.size.width/30 , height: fly.size.height/30)
-        let flyPhysicsSz = CGSize(width: fly.size.width/20, height: fly.size.height/20)
+        let fly = SKSpriteNode(imageNamed: "fly2")
+        let flySz = CGSize(width: fly.size.width/2 , height: fly.size.height/2 )
+        let flyPhysicsSz = CGSize(width: fly.size.width/5, height: fly.size.height/5)
         fly.scale(to: flySz)
-        let randomPosition2 = CGFloat(arc4random_uniform(150))
-        fly.position = CGPoint(x: self.size.width + 150 , y: 50 + randomPosition2 )
+        let randomPosition2 = CGFloat(arc4random_uniform(250))
+        fly.position = CGPoint(x: self.size.width + 150 , y: wavea.size.height + randomPosition2 )
         fly.physicsBody = SKPhysicsBody(rectangleOf:flyPhysicsSz)
         fly.physicsBody?.affectedByGravity = false
         fly.physicsBody?.categoryBitMask = PhysicsCategory.fly
@@ -472,16 +516,93 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         flyNode.run(moveAndRemoveFly)
         self.addChild(flyNode)
     }
+    func addTree(){
+        treeNode = SKNode()
+        let tree = SKSpriteNode(imageNamed: "tree")
+        let treeSz = CGSize(width: tree.size.width  , height: tree.size.height)
+        let treePhysicsSz = CGSize(width: tree.size.width/10, height: tree.size.height/2)
+        tree.scale(to: treeSz)
+        tree.zPosition = -3
+        tree.physicsBody = SKPhysicsBody(rectangleOf:treePhysicsSz)
+        tree.position = CGPoint(x: tree.size.width/2 + self.size.width  , y: 100 )
+        tree.physicsBody?.categoryBitMask = PhysicsCategory.tree
+        tree.physicsBody?.collisionBitMask = PhysicsCategory.bird
+        tree.physicsBody?.contactTestBitMask = PhysicsCategory.bird
+        tree.physicsBody?.isDynamic = false
+        tree.physicsBody?.affectedByGravity = false
+        treeNode.addChild(tree)
+        treeNode.run(moveAndRemoveTree)
+        self.addChild(treeNode)
+
+    }
+
+    func addWavea(){
+        waveNode = SKNode()
+        let wave = SKSpriteNode(imageNamed: "wave2")
+        let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
+        wave.scale(to: waveSz)
+        wave.zPosition = 3
+        wave.position = CGPoint(x: (wave.size.width/2) - 50 , y: (wave.size.height/3))
+        //wave.position = CGPoint(x: wave.size.width/2 + self.size.width  , y: 100 )
+        waveNode.addChild(wave)
+        waveNode.run(moveAndRemoveWave)
+        self.addChild(waveNode)
+    }
+    func addWaveb(){
+        waveNode = SKNode()
+        let wave = SKSpriteNode(imageNamed: "wave2")
+        let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
+        wave.scale(to: waveSz)
+        wave.zPosition = 3
+        wave.position = CGPoint(x: (Int) (wave.size.width/2) * 3 - 55 , y: (Int) (wave.size.height/3))
+        waveNode.addChild(wave)
+        waveNode.run(moveAndRemoveWave)
+        self.addChild(waveNode)
+    }
+    func addWavec(){
+        waveNode = SKNode()
+        let wave = SKSpriteNode(imageNamed: "wave2")
+        let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
+        wave.scale(to: waveSz)
+        wave.zPosition = 3
+        wave.position = CGPoint(x: (Int) (wave.size.width/2) * 5 - 60 , y: (Int) (wave.size.height/3))
+        waveNode.addChild(wave)
+        waveNode.run(moveAndRemoveWave)
+        self.addChild(waveNode)
+    }
+    func addWaved(){
+        waveNode = SKNode()
+        let wave = SKSpriteNode(imageNamed: "wave2")
+        let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
+        wave.scale(to: waveSz)
+        wave.zPosition = 3
+        wave.position = CGPoint(x: (Int) (wave.size.width/2) * 7 - 70 , y: (Int) (wave.size.height/3))
+        waveNode.addChild(wave)
+        waveNode.run(moveAndRemoveWave)
+        self.addChild(waveNode)
+    }
+    func addWavee(){
+        waveNode = SKNode()
+        let wave = SKSpriteNode(imageNamed: "wave2")
+        let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
+        wave.scale(to: waveSz)
+        wave.zPosition = 3
+        wave.position = CGPoint(x: (Int) (wave.size.width/2) * 9 - 30 , y: (Int) (wave.size.height/3))
+        waveNode.addChild(wave)
+        waveNode.run(moveAndRemoveWave)
+        self.addChild(waveNode)
+    }
+
     func addShark() {
         sharkNode = SKNode()
         shark.removeFromParent()
         shark = SKSpriteNode(imageNamed: "shark")
-        let sharkSz = CGSize(width: shark.size.width/3 , height: shark.size.height/3)
+        let sharkSz = CGSize(width: shark.size.width , height: shark.size.height)
         shark.scale(to: sharkSz)
         shark.physicsBody?.isDynamic = true
         shark.physicsBody?.affectedByGravity = true
         shark.position = CGPoint(x: bird.position.x - 100  , y: bird.position.y - 100  )
-        shark.zPosition = 3
+        shark.zPosition = 2
         //move and remove shark
         let moveShark = SKAction.moveBy(x: 80 , y:90, duration: TimeInterval(0.7 ))
        // moveAndRemoveShark = SKAction.sequence([moveShark, removeFromParent])
@@ -494,7 +615,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     func addLightning() {
         lightning.removeFromParent()
         lightning = SKSpriteNode(imageNamed: "lightning")
-        let lightningSz = CGSize(width: lightning.size.width/4 , height: lightning.size.height/4)
+        let lightningSz = CGSize(width: lightning.size.width , height: lightning.size.height)
         lightning.scale(to: lightningSz)
         lightning.physicsBody?.isDynamic = true
         lightning.position = CGPoint(x: bird.position.x , y: bird.position.y + 20 )
@@ -505,11 +626,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         birdHitCloud = false
 
     }
+    func addFruit() {
+        fruit.removeFromParent()
+        fruit = SKSpriteNode(imageNamed: "fruit")
+        let fruitSz = CGSize(width: fruit.size.width , height: fruit.size.height)
+        fruit.scale(to: fruitSz)
+        fruit.physicsBody?.isDynamic = true
+        fruit.position = CGPoint(x: bird.position.x + 5 , y: bird.position.y - 5 )
+        fruit.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+        fruit.physicsBody?.affectedByGravity = true
+        fruit.zPosition = 3
+        let spinFruit = SKAction.rotate(byAngle: CGFloat.pi, duration: 0.7)
+        let spinForeverFruit = SKAction.repeatForever(spinFruit)
+        let moveFruit = SKAction.moveBy(x: -5 , y: -100, duration: TimeInterval(1))
+       let moveAndRemoveFruit = SKAction.sequence([moveFruit, SKAction.removeFromParent()])
+        fruit.run(spinForeverFruit)
+        fruit.run(moveAndRemoveFruit)
+        self.addChild(fruit)
+        birdHitTree = false
+
+    }
 
     func addBoom() {
         boom.removeFromParent()
         boom = SKSpriteNode(imageNamed: "crash")
-        let boomSz = CGSize(width: boom.size.width/7 , height: boom.size.height/7)
+        let boomSz = CGSize(width: boom.size.width/2 , height: boom.size.height/2)
         boom.scale(to: boomSz)
         boom.physicsBody?.isDynamic = true
         boom.position = CGPoint(x: bird.position.x , y: bird.position.y)
@@ -532,8 +673,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     bonus.textColor = UIColor.yellow
     bonus.font = UIFont.init(name: "MarkerFelt-Thin", size: 30)
     bonus.text = "+10"
+        if fruitBonus == true {
+            bonus.text = "+500"
+            fruitBonus = false
+        }
     self.view?.addSubview(bonus)
-    Timer.scheduledTimer(timeInterval: TimeInterval(0.1), target: self, selector: #selector(GameScene.removeBonuse), userInfo: nil, repeats: false)
+    Timer.scheduledTimer(timeInterval: TimeInterval(0.2), target: self, selector: #selector(GameScene.removeBonuse), userInfo: nil, repeats: false)
 
     }
     func removeBonuse(){
@@ -561,7 +706,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         {
            // birdHitJet = true
             bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 5))
+            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 2))
         }
         if firstBody.categoryBitMask == PhysicsCategory.bird && secondBody.categoryBitMask == PhysicsCategory.cloud
             ||
@@ -574,6 +719,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             firstBody.categoryBitMask == PhysicsCategory.fly && secondBody.categoryBitMask == PhysicsCategory.bird
         {
             birdHitFly = true
+        }
+        if firstBody.categoryBitMask == PhysicsCategory.bird && secondBody.categoryBitMask == PhysicsCategory.tree
+            ||
+            firstBody.categoryBitMask == PhysicsCategory.tree && secondBody.categoryBitMask == PhysicsCategory.bird
+        {
+            birdHitTree = true
         }
     }
 
@@ -676,6 +827,58 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             print("error: \(error.localizedDescription)")
         }
         return player!
+    }
+
+    func saveHS(number: Int){
+        if GKLocalPlayer.localPlayer().isAuthenticated{
+            let scoreReport = GKScore(leaderboardIdentifier: "HS")
+            scoreReport.value = Int64(number)
+            let scoreArray: [GKScore] = [scoreReport]
+            GKScore.report(scoreArray, withCompletionHandler: nil)
+        }
+    }
+
+    func showGC(){
+        let VC = self.view?.window?.rootViewController
+        let GCVC = GKGameCenterViewController()
+        GCVC.gameCenterDelegate = self
+        VC?.present(GCVC, animated: true, completion: nil)
+
+        let userDefaults = UserDefaults.standard
+        let highscore7 = userDefaults.value(forKey: "highscore")
+        saveHS(number: highscore7 as! Int)
+    }
+
+
+    func authPlayer() {
+     let localPlayer = GKLocalPlayer.localPlayer()
+        localPlayer.authenticateHandler = {
+            (view, error) in
+            if  view != nil {
+                let VC = self.view?.window?.rootViewController
+                VC?.present(view!, animated: true, completion: nil)
+            }else {
+                print(GKLocalPlayer.localPlayer().isAuthenticated)
+            }
+        }
+    }
+
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
+    }
+
+     func showFacebook() {
+        if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
+            let mySLComposerSheet = SLComposeViewController(forServiceType: SLServiceTypeFacebook)
+            mySLComposerSheet?.setInitialText("Check out my high score")
+           // mySLComposerSheet?.add(NSURL(string: "http://mysite.com")! as URL!)
+           // mySLComposerSheet.
+            let VC = self.view?.window?.rootViewController
+           VC?.present(mySLComposerSheet!, animated: true, completion: nil)
+        }
+        else {
+            // TODO: Alert user that they do not have a facebook account set up on their device
+        }
     }
 
 }
