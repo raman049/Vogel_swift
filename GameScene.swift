@@ -69,6 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var replay = UIButton()
     var gameOverText = UILabel()
     var gcButton = UIButton()
+    var instructionQueBut = UIButton()
     var player: AVAudioPlayer?
     var playerLight: AVAudioPlayer?
     var playerBubble: AVAudioPlayer?
@@ -77,7 +78,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var latinhorn: AVAudioPlayer?
     var count1: CGFloat = CGFloat(0)
     override func didMove(to view: SKView) {
-         authPlayer()
+        authPlayer()
         getItTogether()
 
     }
@@ -117,7 +118,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         wavef.scale(to: waveSz)
         wavef.position = CGPoint(x: (Int) (wavea.size.width/2) * 11 - 40 , y: (Int) (wavea.size.height/3))
         addChild(wavef)
-    //add SUn
+        //add SUn
         let sun = SKSpriteNode(imageNamed: "sun")
         let sunSz = CGSize(width: sun.size.width/2 , height: sun.size.height/2)
         sun.scale(to: sunSz)
@@ -173,7 +174,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
                 birdHitWave = true
             }
             if bird.position.y > self.size.height{   // bird touches sky
-               // birdHitCloud = true
+                // birdHitCloud = true
                 bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: -2))
             }
@@ -217,31 +218,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         bird.texture = SKTexture(imageNamed:"bird2")
         // add highscore
         if gameOver == false {
-        labelHiScore.removeFromSuperview()
-        labelHiScore.textAlignment = .left
-        labelHiScore = UILabel(frame: CGRect(x: self.size.width/90 , y: self.size.height - self.size.height/10 , width: 300, height: 30))
-        labelHiScore.font = UIFont.init(name: "Georgia-Italic", size: 20)
-        labelHiScore.textColor = UIColor.red
-        let userDefaults = UserDefaults.standard
-        let highscore4 = userDefaults.value(forKey: "highscore")
-        labelHiScore.text = "High Score: \(highscore4!)"
-        self.view?.addSubview(labelHiScore)
+            labelHiScore.removeFromSuperview()
+            labelHiScore.textAlignment = .left
+            labelHiScore = UILabel(frame: CGRect(x: self.size.width/90 , y: self.size.height - self.size.height/10 , width: 300, height: 30))
+            labelHiScore.font = UIFont.init(name: "Georgia-Italic", size: 20)
+            labelHiScore.textColor = UIColor.red
+            let userDefaults = UserDefaults.standard
+            let highscore4 = userDefaults.value(forKey: "highscore")
+            labelHiScore.text = "High Score: \(highscore4!)"
+            self.view?.addSubview(labelHiScore)
 
-        //add score
-        scoreLabel.removeFromSuperview()
-        scoreLabel = UILabel(frame: CGRect(x: self.size.width - self.size.width/6 , y: self.size.height - self.size.height/10 , width: 150, height: 30))
-        scoreLabel.textAlignment = .left
-        scoreLabel.textColor = UIColor.red
-        scoreLabel.font = UIFont.init(name: "Georgia-Italic", size: 20)
-        scoreLabel.text = "Score: \(scoreInt)"
-        self.view?.addSubview(scoreLabel)
+            //add score
+            scoreLabel.removeFromSuperview()
+            scoreLabel = UILabel(frame: CGRect(x: self.size.width - self.size.width/6 , y: self.size.height - self.size.height/10 , width: 150, height: 30))
+            scoreLabel.textAlignment = .left
+            scoreLabel.textColor = UIColor.red
+            scoreLabel.font = UIFont.init(name: "Georgia-Italic", size: 20)
+            scoreLabel.text = "Score: \(scoreInt)"
+            self.view?.addSubview(scoreLabel)
         }
         if started == false {
             started = true
             taptoStart.isHidden = true
             bird.physicsBody?.affectedByGravity = true
             //creates a block
-//move and remove jet
+            //move and remove jet
             let removeFromParent = SKAction.removeFromParent()
             let distance = CGFloat(self.frame.width  + jetpair.frame.width + 275 )
             let movingJet = SKAction.run({
@@ -254,7 +255,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             self.run(addJetForever)
             let movePlane = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(5))
             moveAndRemove = SKAction.sequence([movePlane, removeFromParent])
-//move and remove fly
+            //move and remove fly
             let movingFly = SKAction.run({
                 () in
                 self.addFly()
@@ -265,7 +266,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             self.run(addFlyForever)
             let moveFly = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(20))
             moveAndRemoveFly = SKAction.sequence([moveFly, removeFromParent])
-//move and remove tree
+            //move and remove tree
             let movingTree = SKAction.run({
                 () in
                 self.addTree()
@@ -277,7 +278,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             let moveTree = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(3))
             moveAndRemoveTree = SKAction.sequence([moveTree, removeFromParent])
 
-//move and remove cloud
+            //move and remove cloud
             let movingCloud = SKAction.run({
                 () in
                 self.addCloud()
@@ -288,7 +289,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             self.run(addCloudForever)
             let moveCloud = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(14))
             moveAndRemoveCloud = SKAction.sequence([moveCloud, removeFromParent])
-//move and remove ship
+            //move and remove ship
             let movingShip = SKAction.run({
                 () in
                 self.addShip()
@@ -300,7 +301,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             let moveShip = SKAction.moveBy(x: distance , y:0, duration: TimeInterval(50))
             moveAndRemoveShip = SKAction.sequence([moveShip, removeFromParent])
 
-//move and remove Wave
+            //move and remove Wave
             let movingwave = SKAction.run({
                 () in
                 self.addWavea()
@@ -346,15 +347,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if started == true && gameOver == false {
-        bird.texture = SKTexture(imageNamed:"bird1")
-        let s1: AVAudioPlayer = playBird()
-        s1.numberOfLoops = 1
-        s1.play()
+            bird.texture = SKTexture(imageNamed:"bird1")
+            let s1: AVAudioPlayer = playBird()
+            s1.numberOfLoops = 1
+            s1.play()
         }
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-           }
+    }
 
     func gameOverMethod() {
         gameOver = true
@@ -401,20 +402,57 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         replay.setTitle("Replay", for: .normal)
         replay.addTarget(self, action: #selector(GameScene.restartMethod), for: .touchUpInside)
         self.view?.addSubview(replay)
-
-        //add Exit button
+// add instruction
+        let instructionQueImg = UIImage(named: "instructionQue") as UIImage?
+        instructionQueBut.removeFromSuperview()
+         instructionQueBut   = UIButton(type: UIButtonType.custom) as UIButton
+        instructionQueBut.frame = (frame: CGRect(x: 10, y: self.size.height - 10 - (instructionQueImg?.size.height)!/3, width: (instructionQueImg?.size.width)!/3, height: (instructionQueImg?.size.height)!/3))
+        instructionQueBut.setImage(instructionQueImg, for: .normal)
+        instructionQueBut.addTarget(self, action: #selector(GameScene.popUp), for: .touchUpInside)
+        self.view?.addSubview(instructionQueBut)
+//add gc
+        let gcButtonImage = UIImage(named: "scoreboard") as UIImage?
         gcButton.removeFromSuperview()
-         gcButton = UIButton(frame: CGRect(x: self.size.width/2 + self.size.width/6, y: self.size.height/2 + self.size.height/14 , width: 200, height: 50))
-        gcButton.setTitleColor( UIColor.green, for: .normal)
-        gcButton.titleLabel?.font = UIFont.init(name: "Georgia-Italic", size: 25)
-        gcButton.setTitle("Game center", for: .normal)
-        gcButton.addTarget(self, action: #selector(GameScene.showFacebook), for: .touchUpInside)
+        gcButton   = UIButton(type: UIButtonType.custom) as UIButton
+        gcButton.frame = (frame: CGRect(x: 20 + (gcButtonImage?.size.width)!/3 , y: self.size.height - 10 - (gcButtonImage?.size.height)!/3, width: (gcButtonImage?.size.width)!/3, height: (gcButtonImage?.size.height)!/3))
+        gcButton.setImage(gcButtonImage, for: .normal)
+        gcButton.addTarget(self, action: #selector(GameScene.showGC), for: .touchUpInside)
         self.view?.addSubview(gcButton)
     }
 
-    func exit()
+    var customView = UIView()
+    var backButton = UIButton()
+    var instruction = UIImageView()
+    var scoreboard = UIImageView()
+
+    func popUp()
     {
-      UIControl().sendAction(#selector(URLSessionTask.suspend), to: UIApplication.shared, for: nil)
+        //add custom uiview for popup
+        customView.removeFromSuperview()
+        customView = UIView(frame: CGRect(x: 50, y: 50, width: self.size.width - 100 , height: self.size.height - 100))
+        customView.backgroundColor = UIColor.init(red: 196/255, green: 113/255, blue: 245/255, alpha: 255/255)
+        //add image in uiview
+        instruction.removeFromSuperview()
+        instruction = UIImageView(frame:CGRect(x: 50, y: 50, width: self.size.width - 100 , height: self.size.height - 100))
+        instruction.image = UIImage(named: "instruction")!
+        self.view?.addSubview(customView)
+        self.view?.addSubview(instruction)
+        // add back button
+        let backButtonImg = UIImage(named: "back") as UIImage?
+        backButton.removeFromSuperview()
+         backButton   = UIButton(type: UIButtonType.custom) as UIButton
+        backButton.frame = (frame: CGRect(x: 10, y: 10, width: (backButtonImg?.size.width)!/3, height: (backButtonImg?.size.height)!/3))
+        backButton.setImage(backButtonImg, for: .normal)
+        backButton.removeFromSuperview()
+        backButton.addTarget(self, action: #selector(GameScene.closeView), for: .touchUpInside)
+        self.view?.addSubview(backButton)
+    }
+    func closeView(sender:UIButton)
+    {
+       // backgroundColor = UIColor.init(red: 0, green: 0, blue: 200/255, alpha: 255/255)
+        customView.removeFromSuperview()
+        backButton.removeFromSuperview()
+        instruction.removeFromSuperview()
     }
 
     func restartMethod(){
@@ -424,6 +462,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         self.removeFromParent()
         gcButton.isEnabled = true
         gcButton.removeFromSuperview()
+        instructionQueBut.removeFromSuperview()
         gameOverText.isEnabled = false
         gameOverText.removeFromSuperview()
         scoreLabel.removeFromSuperview()
@@ -444,7 +483,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let randomPosition2 = CGFloat(arc4random_uniform(UInt32(heighta)))
         let planeSz = CGSize(width: plane.size.width * 6/5 , height: plane.size.height * 6/5 )
         let planePhysicsSz = CGSize(width: plane.size.width/2 , height: plane.size.height/4)
-        plane.scale(to: planeSz)   
+        plane.scale(to: planeSz)
         plane.position = CGPoint(x: self.size.width + 50 + plane.size.width/3 , y: wavea.size.height + randomPosition2 )
         plane.physicsBody = SKPhysicsBody(rectangleOf: planePhysicsSz)
         plane.physicsBody?.affectedByGravity = false
@@ -457,7 +496,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         jetpair.run(moveAndRemove)
         self.addChild(jetpair)
 
-    
+
     }
 
     func addCloud(){
@@ -605,7 +644,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         shark.zPosition = 2
         //move and remove shark
         let moveShark = SKAction.moveBy(x: 80 , y:90, duration: TimeInterval(0.7 ))
-       // moveAndRemoveShark = SKAction.sequence([moveShark, removeFromParent])
+        // moveAndRemoveShark = SKAction.sequence([moveShark, removeFromParent])
         sharkNode.addChild(shark)
         sharkNode.run(moveShark)
         self.addChild(sharkNode)
@@ -639,7 +678,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let spinFruit = SKAction.rotate(byAngle: CGFloat.pi, duration: 0.7)
         let spinForeverFruit = SKAction.repeatForever(spinFruit)
         let moveFruit = SKAction.moveBy(x: -5 , y: -100, duration: TimeInterval(1))
-       let moveAndRemoveFruit = SKAction.sequence([moveFruit, SKAction.removeFromParent()])
+        let moveAndRemoveFruit = SKAction.sequence([moveFruit, SKAction.removeFromParent()])
         fruit.run(spinForeverFruit)
         fruit.run(moveAndRemoveFruit)
         self.addChild(fruit)
@@ -668,17 +707,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     func addBonus(){
         bonus.removeFromSuperview()
-    bonus = UILabel(frame: CGRect(x: self.size.width/2 - 250, y: self.size.height/2 - 50, width: 500, height: 100))
-    bonus.textAlignment = .center
-    bonus.textColor = UIColor.yellow
-    bonus.font = UIFont.init(name: "MarkerFelt-Thin", size: 30)
-    bonus.text = "+10"
+        bonus = UILabel(frame: CGRect(x: self.size.width/2 - 250, y: self.size.height/2 - 50, width: 500, height: 100))
+        bonus.textAlignment = .center
+        bonus.textColor = UIColor.yellow
+        bonus.font = UIFont.init(name: "MarkerFelt-Thin", size: 30)
+        bonus.text = "+10"
         if fruitBonus == true {
             bonus.text = "+500"
             fruitBonus = false
         }
-    self.view?.addSubview(bonus)
-    Timer.scheduledTimer(timeInterval: TimeInterval(0.2), target: self, selector: #selector(GameScene.removeBonuse), userInfo: nil, repeats: false)
+        self.view?.addSubview(bonus)
+        Timer.scheduledTimer(timeInterval: TimeInterval(0.2), target: self, selector: #selector(GameScene.removeBonuse), userInfo: nil, repeats: false)
 
     }
     func removeBonuse(){
@@ -704,7 +743,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             ||
             firstBody.categoryBitMask == PhysicsCategory.ship && secondBody.categoryBitMask == PhysicsCategory.bird
         {
-           // birdHitJet = true
+            // birdHitJet = true
             bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
             bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 2))
         }
@@ -810,7 +849,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         }
         return player!
     }
-    
+
     func playIsland() -> AVAudioPlayer {
         guard let sound = NSDataAsset(name: "soundIsland") else {
             print("sound asset not found")
@@ -851,7 +890,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
 
     func authPlayer() {
-     let localPlayer = GKLocalPlayer.localPlayer()
+        let localPlayer = GKLocalPlayer.localPlayer()
         localPlayer.authenticateHandler = {
             (view, error) in
             if  view != nil {
@@ -867,14 +906,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         gameCenterViewController.dismiss(animated: true, completion: nil)
     }
 
-     func showFacebook() {
+    func showFacebook() {
         if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
             let mySLComposerSheet = SLComposeViewController(forServiceType: SLServiceTypeFacebook)
             mySLComposerSheet?.setInitialText("Check out my high score")
-           // mySLComposerSheet?.add(NSURL(string: "http://mysite.com")! as URL!)
-           // mySLComposerSheet.
+            // mySLComposerSheet?.add(NSURL(string: "http://mysite.com")! as URL!)
+            // mySLComposerSheet.
             let VC = self.view?.window?.rootViewController
-           VC?.present(mySLComposerSheet!, animated: true, completion: nil)
+            VC?.present(mySLComposerSheet!, animated: true, completion: nil)
         }
         else {
             // TODO: Alert user that they do not have a facebook account set up on their device
@@ -885,16 +924,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
 
 // background red
-class GameScene2: SKScene{
+class GameScene2: SKScene, GKGameCenterControllerDelegate{
     var labelHiScore2 = UILabel()
     var labelVogel = UILabel()
     var playButton = UIButton()
     var player: AVAudioPlayer?
     var s1: AVAudioPlayer?
+    var instructionQueButP1 = UIButton()
+    var gcButtonP1 = UIButton()
 
     override func didMove(to view: SKView) {
         //red background
-          backgroundColor = UIColor.init(red: 1, green: 0, blue: 0.0, alpha: 1.0)
+        backgroundColor = UIColor.init(red: 1, green: 0, blue: 0.0, alpha: 1.0)
         //vogel label
         labelVogel = UILabel(frame: CGRect(x: self.size.width/2 - 250 , y: self.size.height/8, width: 500, height: 150))
         labelVogel.textAlignment = .center
@@ -924,16 +965,105 @@ class GameScene2: SKScene{
         playButton.setTitle("Play", for: .normal)
         playButton.addTarget(self, action: #selector(GameScene2.page1), for: .touchUpInside)
         self.view?.addSubview(playButton)
+//add instruction and scoreboard
+        // add instruction
+        let instructionQueImg = UIImage(named: "instructionQue") as UIImage?
+        instructionQueButP1.removeFromSuperview()
+         instructionQueButP1   = UIButton(type: UIButtonType.custom) as UIButton
+        instructionQueButP1.frame = (frame: CGRect(x: 10, y: self.size.height - 10 - (instructionQueImg?.size.height)!/3, width: (instructionQueImg?.size.width)!/3, height: (instructionQueImg?.size.height)!/3))
+        instructionQueButP1.setImage(instructionQueImg, for: .normal)
+        instructionQueButP1.addTarget(self, action: #selector(GameScene2.popUpP1), for: .touchUpInside)
+        self.view?.addSubview(instructionQueButP1)
+        //add gc
+        let gcButtonImage = UIImage(named: "scoreboard") as UIImage?
+        gcButtonP1.removeFromSuperview()
+        gcButtonP1 = UIButton(type: UIButtonType.custom) as UIButton
+        gcButtonP1.frame = (frame: CGRect(x: 20 + (gcButtonImage?.size.width)!/3 , y: self.size.height - 10 - (gcButtonImage?.size.height)!/3, width: (gcButtonImage?.size.width)!/3, height: (gcButtonImage?.size.height)!/3))
+        gcButtonP1.setImage(gcButtonImage, for: .normal)
+        gcButtonP1.addTarget(self, action: #selector(GameScene2.showGCP2), for: .touchUpInside)
+        self.view?.addSubview(gcButtonP1)
 
         let s1 = playlatinHorn2()
         s1.numberOfLoops = -1
         s1.play()
 
     }
+
+    var customViewP1 = UIView()
+    var backButtonP1 = UIButton()
+    var instructionP1 = UIImageView()
+
+    func popUpP1()
+    {
+        //add custom uiview for popup
+        customViewP1.removeFromSuperview()
+        customViewP1 = UIView(frame: CGRect(x: 50, y: 50, width: self.size.width - 100 , height: self.size.height - 100))
+        customViewP1.backgroundColor = UIColor.init(red: 196/255, green: 113/255, blue: 245/255, alpha: 255/255)
+        //add image in uiview
+        instructionP1.removeFromSuperview()
+        instructionP1 = UIImageView(frame:CGRect(x: 50, y: 50, width: self.size.width - 100 , height: self.size.height - 100))
+        instructionP1.image = UIImage(named: "instruction")!
+        self.view?.addSubview(customViewP1)
+        self.view?.addSubview(instructionP1)
+        // add back button
+        let backButtonImg = UIImage(named: "back") as UIImage?
+        backButtonP1.removeFromSuperview()
+        backButtonP1   = UIButton(type: UIButtonType.custom) as UIButton
+        backButtonP1.frame = (frame: CGRect(x: 10, y: 10, width: (backButtonImg?.size.width)!/3, height: (backButtonImg?.size.height)!/3))
+        backButtonP1.setImage(backButtonImg, for: .normal)
+        backButtonP1.removeFromSuperview()
+        backButtonP1.addTarget(self, action: #selector(GameScene2.closeViewP1), for: .touchUpInside)
+        self.view?.addSubview(backButtonP1)
+    }
+    func closeViewP1(sender:UIButton)
+    {
+        customViewP1.removeFromSuperview()
+        backButtonP1.removeFromSuperview()
+        instructionP1.removeFromSuperview()
+    }
+
+    func saveHS2(number: Int){
+        if GKLocalPlayer.localPlayer().isAuthenticated{
+            let scoreReport = GKScore(leaderboardIdentifier: "HS")
+            scoreReport.value = Int64(number)
+            let scoreArray: [GKScore] = [scoreReport]
+            GKScore.report(scoreArray, withCompletionHandler: nil)
+        }
+    }
+
+    func showGCP2(){
+        let VC1 = self.view?.window?.rootViewController
+        let GCVC1 = GKGameCenterViewController()
+       // GCVC1.gameCenterDelegate = self
+        VC1?.present(GCVC1, animated: true, completion: nil)
+
+        let userDefaults = UserDefaults.standard
+        let highscore8 = userDefaults.value(forKey: "highscore")
+        saveHS2(number: highscore8 as! Int)
+    }
+    func authPlayer2() {
+        let localPlayer = GKLocalPlayer.localPlayer()
+        localPlayer.authenticateHandler = {
+            (view, error) in
+            if  view != nil {
+                let VC = self.view?.window?.rootViewController
+                VC?.present(view!, animated: true, completion: nil)
+            }else {
+                print(GKLocalPlayer.localPlayer().isAuthenticated)
+            }
+        }
+    }
+
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
+    }
+
     func page1(){
         labelVogel.removeFromSuperview()
         labelHiScore2.removeFromSuperview()
         playButton.removeFromSuperview()
+        gcButtonP1.removeFromSuperview()
+        instructionQueButP1.removeFromSuperview()
 
         let scene = GameScene(size: (view?.bounds.size)!)
         let skView = self.view
@@ -942,7 +1072,8 @@ class GameScene2: SKScene{
         skView?.ignoresSiblingOrder = true
         scene.scaleMode = .resizeFill
         skView?.presentScene(scene)
-        }
+    }
+
 
     func playlatinHorn2() -> AVAudioPlayer {
         guard let sound = NSDataAsset(name: "latinHorn") else {
