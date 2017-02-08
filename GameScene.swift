@@ -61,12 +61,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var moveAndRemoveTree = SKAction()
     var moveAndRemoveWave = SKAction()
     var labelHiScore = UILabel()
-    var labelScore = UILabel()
+    var labelHiScoreInt = UILabel()
+   // var labelScore = UILabel()
+    var scoreLabel = UILabel()
+    var labelScoreInt = UILabel()
     var taptoStart = UILabel()
     var bonus = UILabel()
     var finalScoreInt = Int()
     var count = Int()
-    var scoreLabel = UILabel()
     var scoreInt = 0
     var replay = UIButton()
     var gameOverText = UILabel()
@@ -85,6 +87,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     }
 
     func getItTogether(){
+        authPlayer()
         // setup physics
         self.physicsWorld.gravity = CGVector( dx: 0.0, dy: -2 )
         self.physicsWorld.contactDelegate = self
@@ -137,7 +140,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         labelHiScore.font = UIFont.init(name: "MarkerFelt-Thin", size: 20)
         let userDefaults = UserDefaults.standard
         let highscore3 = userDefaults.value(forKey: "highscore")
-        labelHiScore.text = "High Score: \(highscore3!)"
+        labelHiScore.text = "Hi Score: \(highscore3!)"
         self.view?.addSubview(labelHiScore)
 
         //tap to start
@@ -220,25 +223,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         // add highscore
         if gameOver == false {
             labelHiScore.removeFromSuperview()
-            labelHiScore.textAlignment = .left
-            labelHiScore = UILabel(frame: CGRect(x: self.size.width/80 , y: self.size.height/15, width: 300, height: 30))
+           // labelHiScore.textAlignment = .center
+            labelHiScore = UILabel(frame: CGRect(x: self.size.width/80 , y: 10, width: 300, height: 30))
             labelHiScore.font = UIFont.init(name: "Georgia-Italic", size: 20)
             labelHiScore.textColor = UIColor.red
             let userDefaults = UserDefaults.standard
             let highscore4 = userDefaults.value(forKey: "highscore")
             let hs = highscore4 as! NSNumber
-
-            labelHiScore.text = "Hi Score: \(hs)"
+            labelHiScoreInt.removeFromSuperview()
+            //labelHiScoreInt.textAlignment = .center
+            labelHiScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 10 + 20, width: 300, height: 30))
+            labelHiScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 20)
+            labelHiScoreInt.textColor = UIColor.red
+            labelHiScore.text = "High Score:"
+            labelHiScoreInt.text = "\(hs)"
             self.view?.addSubview(labelHiScore)
+            self.view?.addSubview(labelHiScoreInt)
 
             //add score
             scoreLabel.removeFromSuperview()
-            scoreLabel = UILabel(frame: CGRect(x: self.size.width/80 , y: self.size.height/15 + 20 , width: 150, height: 30))
-            scoreLabel.textAlignment = .left
+            scoreLabel = UILabel(frame: CGRect(x: self.size.width/80 , y: 10 + 40 , width: 150, height: 30))
+           // scoreLabel.textAlignment = .center
             scoreLabel.textColor = UIColor.red
             scoreLabel.font = UIFont.init(name:"Georgia-Italic", size: 20)
-            scoreLabel.text = "Score: \(scoreInt)"
+            labelScoreInt.removeFromSuperview()
+            labelScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 10 + 55, width: 150, height: 30))
+           // labelScoreInt.textAlignment = .center
+            labelScoreInt.textColor = UIColor.red
+            labelScoreInt.font = UIFont.init(name:"Georgia-Italic", size: 20)
+            scoreLabel.text = "Your Score:"
+            labelScoreInt.text = "\(scoreInt)"
             self.view?.addSubview(scoreLabel)
+            self.view?.addSubview(labelScoreInt)
         }
         if started == false {
             started = true
@@ -384,21 +400,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         latinhorn?.play()
         backgroundColor = UIColor.init(red: 0, green: 0, blue: 200/255, alpha: 255/255)
         labelHiScore.removeFromSuperview()
+        labelHiScore = UILabel(frame: CGRect(x: self.size.width/3 - 150, y: self.size.height/10 , width: 300, height: 30))
         labelHiScore.textAlignment = .center
-        labelHiScore = UILabel(frame: CGRect(x: self.size.width/2 - 150, y: self.size.height/10 , width: 300, height: 30))
         labelHiScore.font = UIFont.init(name: "Georgia-Italic", size: 25)
         labelHiScore.textColor = UIColor.init(red: 1, green: 1, blue: 0, alpha: 255/255)
         let userDefaults = UserDefaults.standard
         let highscore5 = userDefaults.value(forKey: "highscore")
-        labelHiScore.text = "High Score:  \(highscore5!)"
+        labelHiScoreInt.removeFromSuperview()
+        labelHiScoreInt = UILabel(frame: CGRect(x: self.size.width/3 - 150, y: self.size.height/10 + 25 , width: 300, height: 30))
+        labelHiScoreInt.textAlignment = .center
+        labelHiScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 25)
+        labelHiScoreInt.textColor = UIColor.init(red: 1, green: 1, blue: 0, alpha: 255/255)
+        labelHiScore.text = "High Score:"
+        labelHiScoreInt.text = "\(highscore5!)"
         self.view?.addSubview(labelHiScore)
+        self.view?.addSubview(labelHiScoreInt)
         scoreLabel.removeFromSuperview()
-        scoreLabel = UILabel(frame: CGRect(x: self.size.width/2 - 50, y: self.size.height/5 , width: 150, height: 30))
+        scoreLabel = UILabel(frame: CGRect(x: self.size.width - self.size.width/3 - 150, y: self.size.height/10 , width: 300, height: 30))
         scoreLabel.textAlignment = .center
         scoreLabel.textColor = UIColor.init(red: 1, green: 1, blue: 0, alpha: 255/255)
-        scoreLabel.font = UIFont.init(name: "Georgia-Italic", size: 20)
-        scoreLabel.text = "Score:  \(scoreInt)"
+        scoreLabel.font = UIFont.init(name: "Georgia-Italic", size: 25)
+        scoreLabel.text = "Your Score:"
         self.view?.addSubview(scoreLabel)
+
+        labelScoreInt.removeFromSuperview()
+        labelScoreInt = UILabel(frame: CGRect(x: self.size.width - self.size.width/3 - 150, y: self.size.height/10 + 25, width: 300, height: 30))
+        labelScoreInt.textAlignment = .center
+        labelScoreInt.textColor = UIColor.init(red: 1, green: 1, blue: 0, alpha: 255/255)
+        labelScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 20)
+        labelScoreInt.text = "\(scoreInt)"
+        self.view?.addSubview(labelScoreInt)
 
 
         let InjuredBird = SKSpriteNode(imageNamed: "InjuredBird")
@@ -411,7 +442,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         InjuredBird.physicsBody?.affectedByGravity = false
         self.addChild(InjuredBird)
         //add Replay button
-        replay = UIButton(frame: CGRect(x: self.size.width/7 , y: self.size.height/2 + self.size.height/14 , width: 200, height: 50))
+        replay = UIButton(frame: CGRect(x: self.size.width - 200, y: self.size.height - 40 , width: 100, height: 20))
         replay.setTitleColor( UIColor.green, for: .normal)
         replay.titleLabel?.font = UIFont.init(name: "Georgia-Italic", size: 25)
         replay.setTitle("Replay", for: .normal)
@@ -483,6 +514,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         scoreLabel.removeFromSuperview()
         replay.removeFromSuperview()
         labelHiScore.removeFromSuperview()
+        labelScoreInt.removeFromSuperview()
+        labelHiScoreInt.removeFromSuperview()
         gameOver = false
         started = false
         scoreInt = 0
@@ -822,7 +855,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
 
     func playlatinHorn() -> AVAudioPlayer {
-        guard let soundlatinHorn = NSDataAsset(name: "latinHorn") else {
+        guard let soundlatinHorn = NSDataAsset(name: "into1") else {
             //print("sound asset not found")
             return player!
         }
