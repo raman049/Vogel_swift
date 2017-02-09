@@ -39,6 +39,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var jetpair = SKNode()
     var jetpair2 = SKNode()
     var cloudNode = SKNode()
+    var cloudNode2 = SKNode()
+    var cloudNode3 = SKNode()
     var shipNode = SKNode()
     var sharkNode = SKNode()
     var flyNode = SKNode()
@@ -103,6 +105,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let waved = SKSpriteNode(imageNamed: "wave2")
         let wavee = SKSpriteNode(imageNamed: "wave2")
         let wavef = SKSpriteNode(imageNamed: "wave2")
+        let waveg = SKSpriteNode(imageNamed: "wave2")
         let waveSz = CGSize(width: wavea.size.width, height: wavea.size.height)
         wavea.scale(to: waveSz)
         wavea.position = CGPoint(x: (Int) (wavea.size.width/2)  , y: (Int)(wavea.size.height/3))
@@ -122,6 +125,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         wavef.scale(to: waveSz)
         wavef.position = CGPoint(x: (Int) (wavea.size.width/2) * 11 - 40 , y: (Int) (wavea.size.height/3))
         addChild(wavef)
+        waveg.scale(to: waveSz)
+        waveg.position = CGPoint(x: (Int) (wavea.size.width/2) * 13 - 40 , y: (Int) (wavea.size.height/3))
+        addChild(waveg)
         //add SUn
         let sun = SKSpriteNode(imageNamed: "sun")
         let sunSz = CGSize(width: sun.size.width/2 , height: sun.size.height/2)
@@ -209,11 +215,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             scoreInt = scoreInt + 500
             fruitBonus = true
             addBonus()
+            let coconutSound: AVAudioPlayer = playTree()
+            coconutSound.volume = 0.9
+            coconutSound.play()
             birdHitTree = false
         }
         if birdHitFly == true{
             scoreInt = scoreInt + 50
             addBonus()
+            let flySound: AVAudioPlayer = playFly()
+            flySound.volume = 0.9
+            flySound.play()
             birdHitFly = false
         }
     }
@@ -223,18 +235,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         // add highscore
         if gameOver == false {
             labelHiScore.removeFromSuperview()
-           // labelHiScore.textAlignment = .center
-            labelHiScore = UILabel(frame: CGRect(x: self.size.width/80 , y: 10, width: 300, height: 30))
-            labelHiScore.font = UIFont.init(name: "Georgia-Italic", size: 20)
-            labelHiScore.textColor = UIColor.red
+            labelHiScore = UILabel(frame: CGRect(x: self.size.width/80 , y: 10, width: 300, height: 20))
+            labelHiScore.font = UIFont.init(name: "Georgia-Italic", size: 10)
+            labelHiScore.textColor = UIColor.blue
+           // labelHiScore.textAlignment = .right
             let userDefaults = UserDefaults.standard
             let highscore4 = userDefaults.value(forKey: "highscore")
             let hs = highscore4 as! NSNumber
             labelHiScoreInt.removeFromSuperview()
-            //labelHiScoreInt.textAlignment = .center
-            labelHiScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 10 + 20, width: 300, height: 30))
-            labelHiScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 20)
-            labelHiScoreInt.textColor = UIColor.red
+            labelHiScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 10 + 8, width: 300, height: 20))
+            labelHiScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 10)
+            labelHiScoreInt.textColor = UIColor.blue
+           // labelHiScoreInt.textAlignment = .right
             labelHiScore.text = "High Score:"
             labelHiScoreInt.text = "\(hs)"
             self.view?.addSubview(labelHiScore)
@@ -242,15 +254,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
             //add score
             scoreLabel.removeFromSuperview()
-            scoreLabel = UILabel(frame: CGRect(x: self.size.width/80 , y: 10 + 40 , width: 150, height: 30))
-           // scoreLabel.textAlignment = .center
-            scoreLabel.textColor = UIColor.red
-            scoreLabel.font = UIFont.init(name:"Georgia-Italic", size: 20)
+            scoreLabel = UILabel(frame: CGRect(x: self.size.width/80 , y: 20 + 8 , width: 150, height: 20))
+            //scoreLabel.textAlignment = .center
+            scoreLabel.textColor = UIColor.blue
+            scoreLabel.font = UIFont.init(name:"Georgia-Italic", size: 10)
             labelScoreInt.removeFromSuperview()
-            labelScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 10 + 55, width: 150, height: 30))
+            labelScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 26 + 8, width: 150, height: 20))
            // labelScoreInt.textAlignment = .center
-            labelScoreInt.textColor = UIColor.red
-            labelScoreInt.font = UIFont.init(name:"Georgia-Italic", size: 20)
+            labelScoreInt.textColor = UIColor.blue
+            labelScoreInt.font = UIFont.init(name:"Georgia-Italic", size: 10)
             scoreLabel.text = "Your Score:"
             labelScoreInt.text = "\(scoreInt)"
             self.view?.addSubview(scoreLabel)
@@ -264,6 +276,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             //move and remove jet
             let removeFromParent = SKAction.removeFromParent()
             let distance = CGFloat(self.frame.width  + jetpair.frame.width + 275 )
+            let distanceCloud = CGFloat(self.frame.width * 3 + 275 )
             let movingJet = SKAction.run({
                 () in
                 self.addjets()
@@ -290,34 +303,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
                 () in
                 self.addFly()
             })
-            let delayFly = SKAction.wait(forDuration: 10)   //interval between jets
+            let delayFly = SKAction.wait(forDuration: 8)   //interval between jets
             let addFlyDelay = SKAction.sequence ([movingFly, delayFly])
             let addFlyForever = SKAction.repeatForever(addFlyDelay)
             self.run(addFlyForever)
-            let moveFly = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(15))
+            let moveFly = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(12))
             moveAndRemoveFly = SKAction.sequence([moveFly, removeFromParent])
             //move and remove tree
             let movingTree = SKAction.run({
                 () in
                 self.addTree()
             })
-            let delayTree = SKAction.wait(forDuration: 29)   //interval between jets
+            let delayTree = SKAction.wait(forDuration: 31)   //interval between jets
             let addTreeDelay = SKAction.sequence ([movingTree, delayTree])
             let addTreeForever = SKAction.repeatForever(addTreeDelay)
             self.run(addTreeForever)
-            let moveTree = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(30))
+            let moveTree = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(33))
             moveAndRemoveTree = SKAction.sequence([moveTree, removeFromParent])
 
             //move and remove cloud
             let movingCloud = SKAction.run({
                 () in
                 self.addCloud()
+                self.addCloud2()
+                self.addCloud3()
             })
-            let delayCloud = SKAction.wait(forDuration: 9)   //interval between jets
+            let delayCloud = SKAction.wait(forDuration: 4)   //interval between jets
             let addCloudDelay = SKAction.sequence ([movingCloud, delayCloud])
             let addCloudForever = SKAction.repeatForever(addCloudDelay)
             self.run(addCloudForever)
-            let moveCloud = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(12))
+            let moveCloud = SKAction.moveBy(x: -distanceCloud , y:0, duration: TimeInterval(15))
             moveAndRemoveCloud = SKAction.sequence([moveCloud, removeFromParent])
             //move and remove ship
             let movingShip = SKAction.run({
@@ -339,8 +354,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
                 self.addWavec()
                 self.addWaved()
                 self.addWavee()
+                self.addWavef()
             })
-            let delayWave = SKAction.wait(forDuration: 0.3)   //interval between jets
+            let delayWave = SKAction.wait(forDuration: 0.3)
             let addWaveDelay = SKAction.sequence ([movingwave, delayWave])
             let addWaveForever = SKAction.repeatForever(addWaveDelay)
             self.run(addWaveForever)
@@ -427,7 +443,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         labelScoreInt = UILabel(frame: CGRect(x: self.size.width - self.size.width/3 - 150, y: self.size.height/10 + 25, width: 300, height: 30))
         labelScoreInt.textAlignment = .center
         labelScoreInt.textColor = UIColor.init(red: 1, green: 1, blue: 0, alpha: 255/255)
-        labelScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 20)
+        labelScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 25)
         labelScoreInt.text = "\(scoreInt)"
         self.view?.addSubview(labelScoreInt)
 
@@ -442,10 +458,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         InjuredBird.physicsBody?.affectedByGravity = false
         self.addChild(InjuredBird)
         //add Replay button
-        replay = UIButton(frame: CGRect(x: self.size.width - 200, y: self.size.height - 40 , width: 100, height: 20))
-        replay.setTitleColor( UIColor.green, for: .normal)
-        replay.titleLabel?.font = UIFont.init(name: "Georgia-Italic", size: 25)
-        replay.setTitle("Replay", for: .normal)
+        let replayImage = UIImage(named: "replay") as UIImage?
+        replay = UIButton(type: UIButtonType.custom) as UIButton
+        replay.frame = (frame: CGRect(x: self.size.width - 20 - (replayImage?.size.width)!/3 , y: self.size.height - 10 - (replayImage?.size.height)!/3, width: (replayImage?.size.width)!/3, height: (replayImage?.size.height)!/3))
+        replay.setImage(replayImage, for: .normal)
         replay.addTarget(self, action: #selector(GameScene.restartMethod), for: .touchUpInside)
         self.view?.addSubview(replay)
         // add instruction
@@ -484,7 +500,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         self.view?.addSubview(customView)
         self.view?.addSubview(instruction)
         // add back button
-        let backButtonImg = UIImage(named: "back") as UIImage?
+        let backButtonImg = UIImage(named: "close") as UIImage?
         backButton.removeFromSuperview()
         backButton   = UIButton(type: UIButtonType.custom) as UIButton
         backButton.frame = (frame: CGRect(x: 10, y: 10, width: (backButtonImg?.size.width)!/3, height: (backButtonImg?.size.height)!/3))
@@ -539,7 +555,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         plane.physicsBody?.isDynamic = true
         plane.physicsBody?.collisionBitMask = PhysicsCategory.bird
         plane.physicsBody?.contactTestBitMask = PhysicsCategory.bird
-        plane.zPosition = -1
+        plane.zPosition = 1
         jetpair.addChild(plane)
         jetpair.run(moveAndRemove)
         self.addChild(jetpair)
@@ -560,7 +576,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         plane2.physicsBody?.isDynamic = true
         plane2.physicsBody?.collisionBitMask = PhysicsCategory.bird
         plane2.physicsBody?.contactTestBitMask = PhysicsCategory.bird
-        plane2.zPosition = -1
+        plane2.zPosition = 1
         jetpair2.addChild(plane2)
         jetpair2.run(moveAndRemove2)
         self.addChild(jetpair2)
@@ -569,12 +585,52 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     func addCloud(){
         cloudNode = SKNode()
-        let cloud = SKSpriteNode(imageNamed: "Cloud")
+        let cloud = SKSpriteNode(imageNamed: "cloud1")
         let cloudImageSz = CGSize(width: cloud.size.width/2 , height:cloud.size.height/2)
         let cloudPhysicsSz = CGSize(width: cloud.size.width/4 , height: cloud.size.height/6)
         let randomPosition2 = CGFloat(arc4random_uniform(UInt32((Float)(self.size.height/6))))
         cloud.scale(to: cloudImageSz)
-        cloud.position = CGPoint(x: self.size.width + cloud.size.width/2 - randomPosition2 , y: self.size.height  - randomPosition2 )
+        cloud.position = CGPoint(x: self.size.width + cloud.size.width/2 + randomPosition2 , y: self.size.height  - randomPosition2 )
+        cloud.physicsBody = SKPhysicsBody(rectangleOf: cloudPhysicsSz)
+        cloud.physicsBody?.affectedByGravity = false
+        cloud.physicsBody?.isDynamic = true
+        cloud.physicsBody?.categoryBitMask = PhysicsCategory.cloud
+        cloud.physicsBody?.collisionBitMask = PhysicsCategory.bird
+        cloud.physicsBody?.contactTestBitMask = PhysicsCategory.bird
+        cloud.zPosition = -1
+        cloudNode.addChild(cloud)
+        cloudNode.run(moveAndRemoveCloud)
+        self.addChild(cloudNode)
+    }
+    func addCloud2(){
+        cloudNode2 = SKNode()
+        let cloud = SKSpriteNode(imageNamed: "cloud2")
+        let cloudImageSz = CGSize(width: cloud.size.width/2 , height:cloud.size.height/2)
+        let cloudPhysicsSz = CGSize(width: cloud.size.width/4 , height: cloud.size.height/6)
+        let randomPosition2 = CGFloat(arc4random_uniform(UInt32((Float)(self.size.height/6))))
+        let randomPosition3 = CGFloat(arc4random_uniform(UInt32((Float)((self.size.width) * 2))))
+        cloud.scale(to: cloudImageSz)
+        cloud.position = CGPoint(x: self.size.width + cloud.size.width/2 + randomPosition3 , y: self.size.height  - randomPosition2 )
+        cloud.physicsBody = SKPhysicsBody(rectangleOf: cloudPhysicsSz)
+        cloud.physicsBody?.affectedByGravity = false
+        cloud.physicsBody?.isDynamic = true
+        cloud.physicsBody?.categoryBitMask = PhysicsCategory.cloud
+        cloud.physicsBody?.collisionBitMask = PhysicsCategory.bird
+        cloud.physicsBody?.contactTestBitMask = PhysicsCategory.bird
+        cloud.zPosition = 2
+        cloudNode2.addChild(cloud)
+        cloudNode2.run(moveAndRemoveCloud)
+        self.addChild(cloudNode2)
+    }
+    func addCloud3(){
+        cloudNode3 = SKNode()
+        let cloud = SKSpriteNode(imageNamed: "cloud3")
+        let cloudImageSz = CGSize(width: cloud.size.width/2 , height:cloud.size.height/2)
+        let cloudPhysicsSz = CGSize(width: cloud.size.width/4 , height: cloud.size.height/6)
+        let randomPosition2 = CGFloat(arc4random_uniform(UInt32((Float)(self.size.height/5))))
+        let randomPosition3 = CGFloat(arc4random_uniform(UInt32((Float)((self.size.height) * 3))))
+        cloud.scale(to: cloudImageSz)
+        cloud.position = CGPoint(x: self.size.width + cloud.size.width/2 + randomPosition3 , y: self.size.height  - randomPosition2 )
         cloud.physicsBody = SKPhysicsBody(rectangleOf: cloudPhysicsSz)
         cloud.physicsBody?.affectedByGravity = false
         cloud.physicsBody?.isDynamic = true
@@ -582,9 +638,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         cloud.physicsBody?.collisionBitMask = PhysicsCategory.bird
         cloud.physicsBody?.contactTestBitMask = PhysicsCategory.bird
         cloud.zPosition = 1
-        cloudNode.addChild(cloud)
-        cloudNode.run(moveAndRemoveCloud)
-        self.addChild(cloudNode)
+        cloudNode3.addChild(cloud)
+        cloudNode3.run(moveAndRemoveCloud)
+        self.addChild(cloudNode3)
     }
     func addShip(){
         shipNode = SKNode()
@@ -607,7 +663,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     func addFly(){
         flyNode = SKNode()
         let fly = SKSpriteNode(imageNamed: "fly2")
-        let flySz = CGSize(width: fly.size.width/2 , height: fly.size.height/2 )
+        let flySz = CGSize(width: fly.size.width/3 , height: fly.size.height/3 )
         let flyPhysicsSz = CGSize(width: fly.size.width/5, height: fly.size.height/5)
         fly.scale(to: flySz)
         let heighta = self.size.height - wavea.size.height * 2
@@ -620,23 +676,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         fly.physicsBody?.collisionBitMask = PhysicsCategory.bird
         fly.physicsBody?.contactTestBitMask = PhysicsCategory.bird
         fly.zPosition = -1
-
-
-
         let moveUp = SKAction.moveBy(x: 0, y: 20, duration: 0.9)
-
         let sequence = SKAction.sequence([moveUp, moveUp.reversed()])
-
         flyNode.run(SKAction.repeatForever(sequence), withKey:  "moving")
-//
-//        let jumpFly = SKAction.moveBy(x: 0 , y:-10, duration: TimeInterval(0.2 ))
-//        let actionforever = SKAction.repeatForever(jumpFly)
-//        flyNode.run(actionforever)
-//
-//        let jumpFly2 = SKAction.moveBy(x: 0 , y: 10, duration: TimeInterval(0.2 ))
-//        let actionforever2 = SKAction.repeatForever(jumpFly2)
-//        flyNode.run(actionforever2)
-
         flyNode.addChild(fly)
         flyNode.run(moveAndRemoveFly)
         self.addChild(flyNode)
@@ -713,6 +755,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         wave.scale(to: waveSz)
         wave.zPosition = 3
         wave.position = CGPoint(x: (Int) (wave.size.width/2) * 9 - 30 , y: (Int) (wave.size.height/3))
+        waveNode.addChild(wave)
+        waveNode.run(moveAndRemoveWave)
+        self.addChild(waveNode)
+    }
+    func addWavef(){
+        waveNode = SKNode()
+        let wave = SKSpriteNode(imageNamed: "wave2")
+        let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
+        wave.scale(to: waveSz)
+        wave.zPosition = 3
+        wave.position = CGPoint(x: (Int) (wave.size.width/2) * 11 - 30 , y: (Int) (wave.size.height/3))
         waveNode.addChild(wave)
         waveNode.run(moveAndRemoveWave)
         self.addChild(waveNode)
@@ -953,6 +1006,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         }
         return player!
     }
+    func playTree() -> AVAudioPlayer {
+        guard let sound = NSDataAsset(name: "coconut") else {
+            print("sound asset not found")
+            return player!
+        }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
+
+            // player!.play()
+        } catch let error as NSError {
+            print("error: \(error.localizedDescription)")
+        }
+        return player!
+    }
+    func playFly() -> AVAudioPlayer {
+        guard let sound = NSDataAsset(name: "fly") else {
+            print("sound asset not found")
+            return player!
+        }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
+
+            // player!.play()
+        } catch let error as NSError {
+            print("error: \(error.localizedDescription)")
+        }
+        return player!
+    }
+
 
     func saveHS(number: Int){
         if GKLocalPlayer.localPlayer().isAuthenticated{
