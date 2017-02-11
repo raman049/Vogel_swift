@@ -22,6 +22,7 @@ struct PhysicsCategory {
     static let shark : UInt32 = 0x1 << 6
     static let lightning : UInt32 = 0x1 << 7
     static let tree : UInt32 = 0x1 << 8
+    static let pineappletree : UInt32 = 0x1 << 8
 
 }
 
@@ -45,6 +46,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var sharkNode = SKNode()
     var flyNode = SKNode()
     var treeNode = SKNode()
+    var treeNodePineapple = SKNode()
     var waveNode = SKNode()
     var started = Bool()
     var gameOver = Bool()
@@ -53,7 +55,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var birdHitJet = Bool()
     var birdHitFly = Bool()
     var birdHitTree = Bool()
+    var addTreeFruit = Bool()
+    var birdHitPineappleTree = Bool()
     var fruitBonus = Bool()
+    var fruitBonusPineapple = Bool()
     var moveAndRemove = SKAction()
     var moveAndRemove2 = SKAction()
     var moveAndRemoveCloud = SKAction()
@@ -212,6 +217,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         }
         if birdHitTree == true {
             addFruit()
+            addTreeFruit = true
             scoreInt = scoreInt + 500
             fruitBonus = true
             addBonus()
@@ -219,6 +225,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             coconutSound.volume = 0.9
             coconutSound.play()
             birdHitTree = false
+        }
+        if birdHitPineappleTree == true {
+            addFruit()
+            scoreInt = scoreInt + 1000
+            fruitBonusPineapple = true
+            addBonus()
+            let coconutSound: AVAudioPlayer = playTree()
+            coconutSound.volume = 0.9
+            coconutSound.play()
+            birdHitPineappleTree = false
         }
         if birdHitFly == true{
             scoreInt = scoreInt + 50
@@ -313,12 +329,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             let movingTree = SKAction.run({
                 () in
                 self.addTree()
+                self.addTreePineapple()
             })
-            let delayTree = SKAction.wait(forDuration: 31)   //interval between jets
+            let delayTree = SKAction.wait(forDuration: 3)   //interval between jets
             let addTreeDelay = SKAction.sequence ([movingTree, delayTree])
             let addTreeForever = SKAction.repeatForever(addTreeDelay)
             self.run(addTreeForever)
-            let moveTree = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(33))
+            let moveTree = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(10)) //(33))
             moveAndRemoveTree = SKAction.sequence([moveTree, removeFromParent])
 
             //move and remove cloud
@@ -519,6 +536,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     func restartMethod(){
         latinhorn?.stop()
+        taptoStart.isHidden = true
         self.removeAllChildren()
         self.removeAllActions()
         self.removeFromParent()
@@ -700,7 +718,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         treeNode.addChild(tree)
         treeNode.run(moveAndRemoveTree)
         self.addChild(treeNode)
-
+    }
+    func addTreePineapple(){
+        treeNodePineapple = SKNode()
+        let treePineapple = SKSpriteNode(imageNamed: "pineappletree")
+        let treeSz = CGSize(width: treePineapple.size.width/2  , height: treePineapple.size.height/2)
+        let treePhysicsSz = CGSize(width: treePineapple.size.width/4, height: treePineapple.size.height/4)
+        treePineapple.scale(to: treeSz)
+        treePineapple.zPosition = 1
+        treePineapple.physicsBody = SKPhysicsBody(rectangleOf:treePhysicsSz)
+        let randomPositionPT = CGFloat(arc4random_uniform(250))
+        treePineapple.position = CGPoint(x: treePineapple.size.width/2 + self.size.width + randomPositionPT, y: 70 )
+        treePineapple.physicsBody?.categoryBitMask = PhysicsCategory.pineappletree
+        treePineapple.physicsBody?.collisionBitMask = PhysicsCategory.bird
+        treePineapple.physicsBody?.contactTestBitMask = PhysicsCategory.bird
+        treePineapple.physicsBody?.isDynamic = false
+        treePineapple.physicsBody?.affectedByGravity = false
+        treeNodePineapple.addChild(treePineapple)
+        treeNodePineapple.run(moveAndRemoveTree)
+        self.addChild(treeNodePineapple)
     }
 
     func addWavea(){
@@ -805,7 +841,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     }
     func addFruit() {
         fruit.removeFromParent()
+        if addTreeFruit == true{
         fruit = SKSpriteNode(imageNamed: "fruit")
+            addTreeFruit = false
+        }else {
+            fruit = SKSpriteNode(imageNamed: "pineapple")
+        }
         let fruitSz = CGSize(width: fruit.size.width , height: fruit.size.height)
         fruit.scale(to: fruitSz)
         fruit.physicsBody?.isDynamic = true
@@ -852,6 +893,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         if fruitBonus == true {
             bonus.text = "+500"
             fruitBonus = false
+        }
+        if fruitBonusPineapple == true{
+            bonus.text = "+1000"
+            fruitBonusPineapple = false
         }else{
              bonus.text = "+50"
         }
@@ -903,6 +948,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             firstBody.categoryBitMask == PhysicsCategory.tree && secondBody.categoryBitMask == PhysicsCategory.bird
         {
             birdHitTree = true
+        }
+        if firstBody.categoryBitMask == PhysicsCategory.bird && secondBody.categoryBitMask == PhysicsCategory.pineappletree
+            ||
+            firstBody.categoryBitMask == PhysicsCategory.pineappletree && secondBody.categoryBitMask == PhysicsCategory.bird
+        {
+            birdHitPineappleTree = true
         }
     }
 
