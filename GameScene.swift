@@ -22,7 +22,7 @@ struct PhysicsCategory {
     static let shark : UInt32 = 0x1 << 6
     static let lightning : UInt32 = 0x1 << 7
     static let tree : UInt32 = 0x1 << 8
-    static let pineappletree : UInt32 = 0x1 << 8
+    static let pineappletree : UInt32 = 0x1 << 9
 
 }
 
@@ -216,8 +216,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             Timer.scheduledTimer(timeInterval: TimeInterval(0.7), target: self, selector: #selector(GameScene.gameOverMethod), userInfo: nil, repeats: false)
         }
         if birdHitTree == true {
-            addFruit()
             addTreeFruit = true
+            addFruit()
             scoreInt = scoreInt + 500
             fruitBonus = true
             addBonus()
@@ -227,8 +227,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             birdHitTree = false
         }
         if birdHitPineappleTree == true {
-            addFruit()
             scoreInt = scoreInt + 1000
+            addFruit()
             fruitBonusPineapple = true
             addBonus()
             let coconutSound: AVAudioPlayer = playTree()
@@ -842,7 +842,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     func addFruit() {
         fruit.removeFromParent()
         if addTreeFruit == true{
-        fruit = SKSpriteNode(imageNamed: "fruit")
+            fruit = SKSpriteNode(imageNamed: "fruit")
             addTreeFruit = false
         }else {
             fruit = SKSpriteNode(imageNamed: "pineapple")
@@ -862,6 +862,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         fruit.run(moveAndRemoveFruit)
         self.addChild(fruit)
         birdHitTree = false
+        birdHitPineappleTree = false
 
     }
 
@@ -890,14 +891,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         bonus.textAlignment = .center
         bonus.textColor = UIColor.yellow
         bonus.font = UIFont.init(name: "MarkerFelt-Thin", size: 30)
-        if fruitBonus == true {
-            bonus.text = "+500"
-            fruitBonus = false
-        }
+
         if fruitBonusPineapple == true{
             bonus.text = "+1000"
             fruitBonusPineapple = false
-        }else{
+        }
+        else if fruitBonus == true {
+            bonus.text = "+500"
+            fruitBonus = false
+        }
+        else{
              bonus.text = "+50"
         }
         self.view?.addSubview(bonus)
