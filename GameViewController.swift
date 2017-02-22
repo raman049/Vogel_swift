@@ -23,19 +23,17 @@ class GameViewController: UIViewController {
     //for red background
     override func viewDidLoad() {
         super.viewDidLoad()
-        let scene = GameScene2(size: view.bounds.size)
+        let scene = GameScene0(size: view.bounds.size)
         let skView = view as! SKView
-        skView.showsFPS = true
-        skView.showsNodeCount = true
+        skView.showsFPS = false
+        skView.showsNodeCount = false
         skView.ignoresSiblingOrder = true
         scene.scaleMode = .resizeFill
         skView.presentScene(scene)
-        s1 = scene.playSound()
-        s1?.numberOfLoops = -1
-        //s1?.play()
+       // skView.showsPhysics = true;
+        
     }
 }
-
 
 
 
