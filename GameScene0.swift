@@ -38,7 +38,7 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         labelVogel.text = "VOGEL"
         self.view?.addSubview(labelVogel)
         // add highscore
-        labelHiScore2 = UILabel(frame: CGRect(x: self.size.width/2 - 150, y: self.size.height - self.size.height/5 , width: 300, height: 30))
+        labelHiScore2 = UILabel(frame: CGRect(x: self.size.width/2 - 150, y: self.size.height - self.size.height/5 , width: 300, height: 50))
         labelHiScore2.textAlignment = .center
         labelHiScore2.textColor = UIColor.yellow
         labelHiScore2.font = UIFont.init(name: "MarkerFelt-Thin", size: 25)
@@ -51,11 +51,10 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         labelHiScore2.text = "High Score: \(highscore3!)"
         self.view?.addSubview(labelHiScore2)
         // add play button
-        playButton = UIButton(frame: CGRect(x: self.size.width/2 - 60 , y: self.size.height/2 + 10 , width: 120, height: 25))
-        playButton.setTitleColor( UIColor.green, for: .normal)
-        playButton.titleLabel?.font = UIFont.init(name: "MarkerFelt-Thin", size: 25)
-        playButton.titleLabel?.textColor = UIColor.green
-        playButton.setTitle("Play", for: .normal)
+        let playImage = UIImage(named: "play") as UIImage?
+        playButton = UIButton(type: UIButtonType.custom) as UIButton
+        playButton.frame = (frame: CGRect(x: self.size.width/2 - (playImage?.size.width)!/6 , y: self.size.height/2 + 10 , width:(playImage?.size.width)!/3, height: (playImage?.size.height)!/3))
+        playButton.setImage(playImage, for: .normal)
         playButton.addTarget(self, action: #selector(GameScene0.page1), for: .touchUpInside)
         self.view?.addSubview(playButton)
         //add instruction and scoreboard
@@ -95,11 +94,11 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         //add image in uiview
         instructionP1.removeFromSuperview()
         instructionP1 = UIImageView(frame:CGRect(x: 50, y: 50, width: self.size.width - 100 , height: self.size.height - 100))
-        instructionP1.image = UIImage(named: "instruction")!
+        instructionP1.image = UIImage(named: "instruction2")!
         self.view?.addSubview(customViewP1)
         self.view?.addSubview(instructionP1)
         // add back button
-        let backButtonImg = UIImage(named: "back") as UIImage?
+        let backButtonImg = UIImage(named: "close") as UIImage?
         backButtonP1.removeFromSuperview()
         backButtonP1   = UIButton(type: UIButtonType.custom) as UIButton
         backButtonP1.frame = (frame: CGRect(x: 10, y: 10, width: (backButtonImg?.size.width)!/3, height: (backButtonImg?.size.height)!/3))
@@ -171,8 +170,8 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
 
         let scene = GameScene(size: (view?.bounds.size)!)
         let skView = self.view
-        skView?.showsFPS = true
-        skView?.showsNodeCount = true
+        skView?.showsFPS = false
+        skView?.showsNodeCount = false
         skView?.ignoresSiblingOrder = true
         scene.scaleMode = .resizeFill
         skView?.presentScene(scene)
@@ -180,7 +179,7 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
 
 
     func playlatinHorn2() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "latinHorn") else {
+        guard let sound = NSDataAsset(name: "intro1") else {
             //print("sound asset not found")
             return player!
         }

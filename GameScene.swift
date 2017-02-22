@@ -270,15 +270,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
             //add score
             scoreLabel.removeFromSuperview()
-            scoreLabel = UILabel(frame: CGRect(x: self.size.width/80 , y: 20 + 8 , width: 150, height: 20))
+            scoreLabel = UILabel(frame: CGRect(x: self.size.width/80 , y: 20 + 10 , width: 150, height: 20))
             //scoreLabel.textAlignment = .center
             scoreLabel.textColor = UIColor.blue
             scoreLabel.font = UIFont.init(name:"Georgia-Italic", size: 10)
             labelScoreInt.removeFromSuperview()
-            labelScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 26 + 8, width: 150, height: 20))
+            labelScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 26 + 15, width: 150, height: 20))
            // labelScoreInt.textAlignment = .center
             labelScoreInt.textColor = UIColor.blue
-            labelScoreInt.font = UIFont.init(name:"Georgia-Italic", size: 10)
+            labelScoreInt.font = UIFont.init(name:"Georgia-Italic", size: 15)
             scoreLabel.text = "Your Score:"
             labelScoreInt.text = "\(scoreInt)"
             self.view?.addSubview(scoreLabel)
@@ -331,11 +331,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
                 self.addTree()
                 self.addTreePineapple()
             })
-            let delayTree = SKAction.wait(forDuration: 3)   //interval between jets
+            let delayTree = SKAction.wait(forDuration: 33)   //interval between jets
             let addTreeDelay = SKAction.sequence ([movingTree, delayTree])
             let addTreeForever = SKAction.repeatForever(addTreeDelay)
             self.run(addTreeForever)
-            let moveTree = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(10)) //(33))
+            let moveTree = SKAction.moveBy(x: -distance , y:0, duration: TimeInterval(33))
             moveAndRemoveTree = SKAction.sequence([moveTree, removeFromParent])
 
             //move and remove cloud
@@ -440,9 +440,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let userDefaults = UserDefaults.standard
         let highscore5 = userDefaults.value(forKey: "highscore")
         labelHiScoreInt.removeFromSuperview()
-        labelHiScoreInt = UILabel(frame: CGRect(x: self.size.width/3 - 150, y: self.size.height/10 + 25 , width: 300, height: 30))
+        labelHiScoreInt = UILabel(frame: CGRect(x: self.size.width/3 - 150, y: self.size.height/10 + 25 , width: 300, height: 40))
         labelHiScoreInt.textAlignment = .center
-        labelHiScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 25)
+        labelHiScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 40)
         labelHiScoreInt.textColor = UIColor.init(red: 1, green: 1, blue: 0, alpha: 255/255)
         labelHiScore.text = "High Score:"
         labelHiScoreInt.text = "\(highscore5!)"
@@ -457,10 +457,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         self.view?.addSubview(scoreLabel)
 
         labelScoreInt.removeFromSuperview()
-        labelScoreInt = UILabel(frame: CGRect(x: self.size.width - self.size.width/3 - 150, y: self.size.height/10 + 25, width: 300, height: 30))
+        labelScoreInt = UILabel(frame: CGRect(x: self.size.width - self.size.width/3 - 150, y: self.size.height/10 + 25, width: 300, height: 40))
         labelScoreInt.textAlignment = .center
         labelScoreInt.textColor = UIColor.init(red: 1, green: 1, blue: 0, alpha: 255/255)
-        labelScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 25)
+        labelScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 40)
         labelScoreInt.text = "\(scoreInt)"
         self.view?.addSubview(labelScoreInt)
 
@@ -507,13 +507,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     func popUp()
     {
         //add custom uiview for popup
+        replay.isEnabled = false
         customView.removeFromSuperview()
         customView = UIView(frame: CGRect(x: 50, y: 50, width: self.size.width - 100 , height: self.size.height - 100))
         customView.backgroundColor = UIColor.init(red: 196/255, green: 113/255, blue: 245/255, alpha: 255/255)
         //add image in uiview
         instruction.removeFromSuperview()
         instruction = UIImageView(frame:CGRect(x: 50, y: 50, width: self.size.width - 100 , height: self.size.height - 100))
-        instruction.image = UIImage(named: "instruction")!
+        instruction.image = UIImage(named: "instruction2")!
         self.view?.addSubview(customView)
         self.view?.addSubview(instruction)
         // add back button
@@ -528,7 +529,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     }
     func closeView(sender:UIButton)
     {
-        // backgroundColor = UIColor.init(red: 0, green: 0, blue: 200/255, alpha: 255/255)
+        replay.isEnabled = true
         customView.removeFromSuperview()
         backButton.removeFromSuperview()
         instruction.removeFromSuperview()
@@ -681,7 +682,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     func addFly(){
         flyNode = SKNode()
         let fly = SKSpriteNode(imageNamed: "fly2")
-        let flySz = CGSize(width: fly.size.width/3 , height: fly.size.height/3 )
+        let flySz = CGSize(width: fly.size.width/4 , height: fly.size.height/4 )
         let flyPhysicsSz = CGSize(width: fly.size.width/5, height: fly.size.height/5)
         fly.scale(to: flySz)
         let heighta = self.size.height - wavea.size.height * 2
@@ -962,7 +963,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
 
     func playlatinHorn() -> AVAudioPlayer {
-        guard let soundlatinHorn = NSDataAsset(name: "into1") else {
+        guard let soundlatinHorn = NSDataAsset(name: "intro1") else {
             //print("sound asset not found")
             return player!
         }
@@ -1044,7 +1045,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     }
 
     func playIsland() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "soundIsland") else {
+        guard let sound = NSDataAsset(name: "intro2") else {
             print("sound asset not found")
             return player!
         }
