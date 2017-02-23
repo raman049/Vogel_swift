@@ -12,6 +12,9 @@ import GameKit
 import Darwin
 import AVFoundation
 import Social
+import Firebase;
+import GoogleMobileAds
+
 
 struct PhysicsCategory {
     static let bird : UInt32 = 0x1 << 1
@@ -27,7 +30,7 @@ struct PhysicsCategory {
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate  {
-
+    var interstitial: GADInterstitial!
     var bird2 = SKSpriteNode()
     var bird1 = SKSpriteNode()
     var bird = SKSpriteNode()
@@ -95,6 +98,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     func getItTogether(){
         authPlayer()
+        startNewGame()
         // setup physics
         self.physicsWorld.gravity = CGVector( dx: 0.0, dy: -2 )
         self.physicsWorld.contactDelegate = self
@@ -424,6 +428,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     func gameOverMethod() {
         gameOver = true
         soundIsland?.stop()
+        addads1I()
+
         self.removeAllChildren()
         self.removeAllActions()
         replay.isHidden = true
@@ -497,6 +503,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         gcButton.setImage(gcButtonImage, for: .normal)
         gcButton.addTarget(self, action: #selector(GameScene.showGC), for: .touchUpInside)
         self.view?.addSubview(gcButton)
+        
     }
 
     var customView = UIView()
@@ -1156,6 +1163,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             // TODO: Alert user that they do not have a facebook account set up on their device
         }
     }
-    
+
+    fileprivate func startNewGame() {
+        createAndLoadInterstitial()
+
+        // Set up a new game.
+    }
+    fileprivate func createAndLoadInterstitial() {
+        interstitial = GADInterstitial(adUnitID: "ca-app-pub-7941365967795667/4059149234")
+        let request = GADRequest()
+        // Request test ads on devices you specify. Your test device ID is printed to the console when
+        // an ad request is made.
+        request.testDevices = [ kGADSimulatorID ]
+        interstitial.load(request)
+    }
+    func addads1I(){
+        if interstitial.isReady {
+            let currentViewController:UIViewController=UIApplication.shared.keyWindow!.rootViewController!
+            interstitial.present(fromRootViewController: currentViewController)
+        } else {
+            print("Ad wasn't ready")
+        }
+
+    }
+
+    var adBannerView: GADBannerView?
+
+     func banner() {
+        adBannerView?.adUnitID = "ca-app-pub-7941365967795667/9898703231"
+        //adBannerView = DFPBannerView(adSize: kGADAdSizeSmartBannerLandscape)
+        let customAdSize = GADAdSizeFromCGSize(CGSize(width: 250, height: 250))
+        adBannerView = GADBannerView(adSize: customAdSize)
+
+        let currentViewController2:UIViewController=UIApplication.shared.keyWindow!.rootViewController!
+
+        let request2 : GADRequest = GADRequest()
+        request2.testDevices = [ kGADSimulatorID ]
+        adBannerView?.load(request2)
+        currentViewController2.view.addSubview(adBannerView!)
+    }
+
+    func adViewDidReceiveAd(_ bannerView: GADBannerView!) {
+        print("Banner loaded successfully")
+        self.view?.addSubview(bannerView!)
+        self.view?.layoutIfNeeded()
+    }
+
 }
 
