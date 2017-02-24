@@ -14,7 +14,7 @@ import AVFoundation
 import Social
 import Firebase;
 import GoogleMobileAds
-
+import UIKit
 
 struct PhysicsCategory {
     static let bird : UInt32 = 0x1 << 1
@@ -91,7 +91,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var latinhorn: AVAudioPlayer?
     var count1: CGFloat = CGFloat(0)
     var adBannerView = GADBannerView()
-
+    var screenShot = UIImage()
+    var image0 = UIGraphicsGetImageFromCurrentImageContext()
     override func didMove(to view: SKView) {
         getItTogether()
 
@@ -433,13 +434,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         self.removeAllChildren()
         self.removeAllActions()
         replay.isHidden = true
-         banner()
-
-       
-
-
-
-
+        banner()
         //play spanish horn music
         latinhorn = playlatinHorn()
         latinhorn?.numberOfLoops = -1
@@ -508,9 +503,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         gcButton   = UIButton(type: UIButtonType.custom) as UIButton
         gcButton.frame = (frame: CGRect(x: 20 + (gcButtonImage?.size.width)!/3 , y: self.size.height - 10 - (gcButtonImage?.size.height)!/3, width: (gcButtonImage?.size.width)!/3, height: (gcButtonImage?.size.height)!/3))
         gcButton.setImage(gcButtonImage, for: .normal)
-        gcButton.addTarget(self, action: #selector(GameScene.showGC), for: .touchUpInside)
+        gcButton.addTarget(self, action: #selector(GameScene.showFacebook), for: .touchUpInside)
         self.view?.addSubview(gcButton)
-        
+
     }
 
     var customView = UIView()
@@ -1160,10 +1155,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     func showFacebook() {
         if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
-            let mySLComposerSheet = SLComposeViewController(forServiceType: SLServiceTypeFacebook)
-            mySLComposerSheet?.setInitialText("Check out my high score")
-            // mySLComposerSheet?.add(NSURL(string: "http://mysite.com")! as URL!)
-            // mySLComposerSheet.
+        let mySLComposerSheet = SLComposeViewController(forServiceType: SLServiceTypeFacebook)
+            screenShot = captureScreen()!
+           mySLComposerSheet?.add(screenShot)
+           //   mySLComposerSheet?.setInitialText("sdjlk")
+          // mySLComposerSheet?.add(NSURL(string: "http://www.vogelplay.com/")! as URL!)
             let VC = self.view?.window?.rootViewController
             VC?.present(mySLComposerSheet!, animated: true, completion: nil)
         }
@@ -1210,5 +1206,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     }
 
-}
 
+    func captureScreen() -> UIImage? {
+        
+        UIGraphicsBeginImageContextWithOptions((view?.bounds.size)!, true, UIScreen.main.scale)
+        view?.layer.render(in: UIGraphicsGetCurrentContext()!)
+
+        image0 = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image0
+    }
+//    func captureScreen() -> UIImage {
+//        let snapshotView = scene?.view!.snapshotView(afterScreenUpdates: true)
+//        let bounds = UIScreen.main.bounds
+//
+//        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
+//
+//        snapshotView?.drawHierarchy(in: bounds, afterScreenUpdates: true)
+//
+//         image0 = UIGraphicsGetImageFromCurrentImageContext()
+//
+//        UIGraphicsEndImageContext()
+//        
+//        return image0!
+//    }
+
+}
