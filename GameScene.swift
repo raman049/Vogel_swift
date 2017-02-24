@@ -29,7 +29,7 @@ struct PhysicsCategory {
 
 }
 
-class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate  {
+class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate,GADBannerViewDelegate  {
     var interstitial: GADInterstitial!
     var bird2 = SKSpriteNode()
     var bird1 = SKSpriteNode()
@@ -429,10 +429,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         gameOver = true
         soundIsland?.stop()
         addads1I()
-
         self.removeAllChildren()
         self.removeAllActions()
         replay.isHidden = true
+         banner()
+
+       
+
+
+
+
         //play spanish horn music
         latinhorn = playlatinHorn()
         latinhorn?.numberOfLoops = -1
@@ -1187,26 +1193,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     }
 
-    var adBannerView: GADBannerView?
+    var adBannerView = GADBannerView()
 
-     func banner() {
-        adBannerView?.adUnitID = "ca-app-pub-7941365967795667/9898703231"
-        //adBannerView = DFPBannerView(adSize: kGADAdSizeSmartBannerLandscape)
-        let customAdSize = GADAdSizeFromCGSize(CGSize(width: 250, height: 250))
-        adBannerView = GADBannerView(adSize: customAdSize)
+    func banner() {
 
-        let currentViewController2:UIViewController=UIApplication.shared.keyWindow!.rootViewController!
-
-        let request2 : GADRequest = GADRequest()
+       adBannerView.adSize = kGADAdSizeSmartBannerLandscape
+        self.view?.addSubview(adBannerView)
+        adBannerView.adUnitID = "ca-app-pub-7941365967795667/9898703231"
+        let currentViewController:UIViewController=UIApplication.shared.keyWindow!.rootViewController!
+        self.adBannerView.rootViewController = currentViewController
+        adBannerView.delegate=self
+        let request2 = GADRequest()
         request2.testDevices = [ kGADSimulatorID ]
-        adBannerView?.load(request2)
-        currentViewController2.view.addSubview(adBannerView!)
-    }
+        adBannerView.load(request2)
 
-    func adViewDidReceiveAd(_ bannerView: GADBannerView!) {
-        print("Banner loaded successfully")
-        self.view?.addSubview(bannerView!)
-        self.view?.layoutIfNeeded()
     }
 
 }
