@@ -72,7 +72,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var moveAndRemoveWave = SKAction()
     var labelHiScore = UILabel()
     var labelHiScoreInt = UILabel()
-   // var labelScore = UILabel()
     var scoreLabel = UILabel()
     var labelScoreInt = UILabel()
     var taptoStart = UILabel()
@@ -91,6 +90,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var soundIsland: AVAudioPlayer?
     var latinhorn: AVAudioPlayer?
     var count1: CGFloat = CGFloat(0)
+    var adBannerView = GADBannerView()
+
     override func didMove(to view: SKView) {
         getItTogether()
 
@@ -555,6 +556,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         self.removeAllActions()
         self.removeFromParent()
         gcButton.isEnabled = true
+        adBannerView.removeFromSuperview()
         gcButton.removeFromSuperview()
         instructionQueBut.removeFromSuperview()
         gameOverText.isEnabled = false
@@ -1193,10 +1195,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     }
 
-    var adBannerView = GADBannerView()
 
     func banner() {
-
+        adBannerView.removeFromSuperview()
        adBannerView.adSize = kGADAdSizeSmartBannerLandscape
         self.view?.addSubview(adBannerView)
         adBannerView.adUnitID = "ca-app-pub-7941365967795667/9898703231"
