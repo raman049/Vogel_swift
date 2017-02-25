@@ -82,6 +82,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var replay = UIButton()
     var gameOverText = UILabel()
     var gcButton = UIButton()
+    var fbButton = UIButton()
     var instructionQueBut = UIButton()
     var player: AVAudioPlayer?
     var playerLight: AVAudioPlayer?
@@ -92,6 +93,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var count1: CGFloat = CGFloat(0)
     var adBannerView = GADBannerView()
     var screenShot = UIImage()
+    var InjuredBirdimage = SKSpriteNode()
+    var InjuredBird = UIImageView()
+
     var image0 = UIGraphicsGetImageFromCurrentImageContext()
     override func didMove(to view: SKView) {
         getItTogether()
@@ -472,8 +476,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         labelScoreInt.text = "\(scoreInt)"
         self.view?.addSubview(labelScoreInt)
 
-        var InjuredBird = UIImageView()
-        let InjuredBirdimage = SKSpriteNode(imageNamed: "InjuredBird")
+
+        InjuredBird.removeFromSuperview()
+        InjuredBirdimage.removeFromParent()
+        InjuredBirdimage = SKSpriteNode(imageNamed: "InjuredBird")
         InjuredBird = UIImageView(frame:CGRect(x:self.size.width/2 - (InjuredBirdimage.size.width * 3)/2, y: self.size.height/3, width: InjuredBirdimage.size.width * 3, height: InjuredBirdimage.size.height * 3))
         InjuredBird.image = UIImage(named: "InjuredBird")!
         self.view?.addSubview(InjuredBird)
@@ -493,14 +499,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         instructionQueBut.setImage(instructionQueImg, for: .normal)
         instructionQueBut.addTarget(self, action: #selector(GameScene.popUp), for: .touchUpInside)
         self.view?.addSubview(instructionQueBut)
-        //add gc
+    //add gc
         let gcButtonImage = UIImage(named: "scoreboard") as UIImage?
         gcButton.removeFromSuperview()
         gcButton   = UIButton(type: UIButtonType.custom) as UIButton
         gcButton.frame = (frame: CGRect(x: 20 + (gcButtonImage?.size.width)!/3 , y: self.size.height - 10 - (gcButtonImage?.size.height)!/3, width: (gcButtonImage?.size.width)!/3, height: (gcButtonImage?.size.height)!/3))
         gcButton.setImage(gcButtonImage, for: .normal)
-        gcButton.addTarget(self, action: #selector(GameScene.showFacebook), for: .touchUpInside)
+        gcButton.addTarget(self, action: #selector(GameScene.showGC), for: .touchUpInside)
         self.view?.addSubview(gcButton)
+    //add fb
+        let fbButtonImage = UIImage(named: "fblogo") as UIImage?
+        fbButton.removeFromSuperview()
+        fbButton = UIButton(type: UIButtonType.custom) as UIButton
+        fbButton.frame = (frame: CGRect(x: 10 , y: self.size.height - 20 - ((fbButtonImage?.size.height)!/3)*2, width: (fbButtonImage?.size.width)!/3, height: (fbButtonImage?.size.height)!/3))
+        fbButton.setImage(fbButtonImage, for: .normal)
+        fbButton.addTarget(self, action: #selector(GameScene.showFacebook), for: .touchUpInside)
+        self.view?.addSubview(fbButton)
+
 
     }
 
@@ -547,8 +562,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         self.removeAllActions()
         self.removeFromParent()
         gcButton.isEnabled = true
+        InjuredBird.removeFromSuperview()
         adBannerView.removeFromSuperview()
         gcButton.removeFromSuperview()
+        fbButton.removeFromSuperview()
         instructionQueBut.removeFromSuperview()
         gameOverText.isEnabled = false
         gameOverText.removeFromSuperview()
@@ -1152,10 +1169,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     func showFacebook() {
         if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
         let mySLComposerSheet = SLComposeViewController(forServiceType: SLServiceTypeFacebook)
+            adBannerView.removeFromSuperview()
             screenShot = captureScreen()!
-           mySLComposerSheet?.add(screenShot)
-           //   mySLComposerSheet?.setInitialText("sdjlk")
-          // mySLComposerSheet?.add(NSURL(string: "http://www.vogelplay.com/")! as URL!)
+
+           // mySLComposerSheet?.setInitialText("vogel")
+              mySLComposerSheet?.add(screenShot)
+          // mySLComposerSheet?.add(URL(string: "http://www.vogelplay.com/")! as URL!)
+
             let VC = self.view?.window?.rootViewController
             VC?.present(mySLComposerSheet!, animated: true, completion: nil)
         }
@@ -1176,8 +1196,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     fileprivate func createAndLoadInterstitial() {
         interstitial = GADInterstitial(adUnitID: "ca-app-pub-7941365967795667/4059149234")
         let request = GADRequest()
-        // Request test ads on devices you specify. Your test device ID is printed to the console when
-        // an ad request is made.
         request.testDevices = [ kGADSimulatorID ]
         interstitial.load(request)
     }
