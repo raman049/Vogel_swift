@@ -472,16 +472,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         labelScoreInt.text = "\(scoreInt)"
         self.view?.addSubview(labelScoreInt)
 
+        var InjuredBird = UIImageView()
+        let InjuredBirdimage = SKSpriteNode(imageNamed: "InjuredBird")
+        InjuredBird = UIImageView(frame:CGRect(x:self.size.width/2 - (InjuredBirdimage.size.width * 3)/2, y: self.size.height/3, width: InjuredBirdimage.size.width * 3, height: InjuredBirdimage.size.height * 3))
+        InjuredBird.image = UIImage(named: "InjuredBird")!
+        self.view?.addSubview(InjuredBird)
 
-        let InjuredBird = SKSpriteNode(imageNamed: "InjuredBird")
-        let InjuredBirdSz = CGSize(width: InjuredBird.size.width * 3, height: InjuredBird.size.height * 3)
-        InjuredBird.scale(to: InjuredBirdSz)
-        InjuredBird.position = CGPoint(x: self.size.width/2, y: self.size.height/3)
-        InjuredBird.physicsBody?.isDynamic = false
-        InjuredBird.zPosition = 2
-        InjuredBird.physicsBody?.allowsRotation = false
-        InjuredBird.physicsBody?.affectedByGravity = false
-        self.addChild(InjuredBird)
         //add Replay button
         let replayImage = UIImage(named: "replay") as UIImage?
         replay = UIButton(type: UIButtonType.custom) as UIButton
@@ -1164,7 +1160,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             VC?.present(mySLComposerSheet!, animated: true, completion: nil)
         }
         else {
-            // TODO: Alert user that they do not have a facebook account set up on their device
+            let alert = UIAlertController(title: "Accounts", message: "Please login to a Facebook account to share.", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            let VC2 = self.view?.window?.rootViewController
+            VC2?.present(alert, animated: true, completion: nil)
+
         }
     }
 
@@ -1206,9 +1206,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     }
 
-
     func captureScreen() -> UIImage? {
-        
         UIGraphicsBeginImageContextWithOptions((view?.bounds.size)!, true, UIScreen.main.scale)
         view?.layer.render(in: UIGraphicsGetCurrentContext()!)
 
@@ -1216,19 +1214,5 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         UIGraphicsEndImageContext()
         return image0
     }
-//    func captureScreen() -> UIImage {
-//        let snapshotView = scene?.view!.snapshotView(afterScreenUpdates: true)
-//        let bounds = UIScreen.main.bounds
-//
-//        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
-//
-//        snapshotView?.drawHierarchy(in: bounds, afterScreenUpdates: true)
-//
-//         image0 = UIGraphicsGetImageFromCurrentImageContext()
-//
-//        UIGraphicsEndImageContext()
-//        
-//        return image0!
-//    }
 
 }
