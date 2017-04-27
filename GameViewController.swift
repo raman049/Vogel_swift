@@ -10,8 +10,10 @@ import UIKit
 import SpriteKit
 import GameplayKit
 import AVFoundation
+import Firebase;
+import GoogleMobileAds
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, GADBannerViewDelegate {
 
 
     var player: AVAudioPlayer?
@@ -30,9 +32,9 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = true
         scene.scaleMode = .resizeFill
         skView.presentScene(scene)
-       // skView.showsPhysics = true;
-        
+
     }
+    
 }
 
 
