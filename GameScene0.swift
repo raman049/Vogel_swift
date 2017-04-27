@@ -53,7 +53,7 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         // add play button
         let playImage = UIImage(named: "play") as UIImage?
         playButton = UIButton(type: UIButtonType.custom) as UIButton
-        playButton.frame = (frame: CGRect(x: self.size.width/2 - (playImage?.size.width)!/6 , y: self.size.height/2 + 10 , width:(playImage?.size.width)!/3, height: (playImage?.size.height)!/3))
+        playButton.frame =  CGRect(x: self.size.width/2 - (playImage?.size.width)!/6 , y: self.size.height/2 + 10 , width:(playImage?.size.width)!/3, height: (playImage?.size.height)!/3)
         playButton.setImage(playImage, for: .normal)
         playButton.addTarget(self, action: #selector(GameScene0.page1), for: .touchUpInside)
         self.view?.addSubview(playButton)
@@ -62,7 +62,7 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         let instructionQueImg = UIImage(named: "instructionQue") as UIImage?
         instructionQueButP1.removeFromSuperview()
         instructionQueButP1   = UIButton(type: UIButtonType.custom) as UIButton
-        instructionQueButP1.frame = (frame: CGRect(x: 10, y: self.size.height - 10 - (instructionQueImg?.size.height)!/3, width: (instructionQueImg?.size.width)!/3, height: (instructionQueImg?.size.height)!/3))
+        instructionQueButP1.frame =  CGRect(x: 10, y: self.size.height - 10 - (instructionQueImg?.size.height)!/3, width: (instructionQueImg?.size.width)!/3, height: (instructionQueImg?.size.height)!/3)
         instructionQueButP1.setImage(instructionQueImg, for: .normal)
         instructionQueButP1.addTarget(self, action: #selector(GameScene0.popUpP1), for: .touchUpInside)
         self.view?.addSubview(instructionQueButP1)
@@ -70,7 +70,7 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         let gcButtonImage = UIImage(named: "scoreboard") as UIImage?
         gcButtonP1.removeFromSuperview()
         gcButtonP1 = UIButton(type: UIButtonType.custom) as UIButton
-        gcButtonP1.frame = (frame: CGRect(x: 20 + (gcButtonImage?.size.width)!/3 , y: self.size.height - 10 - (gcButtonImage?.size.height)!/3, width: (gcButtonImage?.size.width)!/3, height: (gcButtonImage?.size.height)!/3))
+        gcButtonP1.frame = CGRect(x: 20 + (gcButtonImage?.size.width)!/3 , y: self.size.height - 10 - (gcButtonImage?.size.height)!/3, width: (gcButtonImage?.size.width)!/3, height: (gcButtonImage?.size.height)!/3)
         gcButtonP1.setImage(gcButtonImage, for: .normal)
         gcButtonP1.addTarget(self, action: #selector(GameScene0.showGCP2), for: .touchUpInside)
         self.view?.addSubview(gcButtonP1)
@@ -101,10 +101,10 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         let backButtonImg = UIImage(named: "close") as UIImage?
         backButtonP1.removeFromSuperview()
         backButtonP1   = UIButton(type: UIButtonType.custom) as UIButton
-        backButtonP1.frame = (frame: CGRect(x: 10, y: 10, width: (backButtonImg?.size.width)!/3, height: (backButtonImg?.size.height)!/3))
+        backButtonP1.frame =  CGRect(x: 10, y: 10, width: (backButtonImg?.size.width)!/3, height: (backButtonImg?.size.height)!/3)
         backButtonP1.setImage(backButtonImg, for: .normal)
         backButtonP1.removeFromSuperview()
-          backButtonP1.addTarget(self, action: #selector(GameScene0.closeViewP1), for: .touchUpInside)
+        backButtonP1.addTarget(self, action: #selector(GameScene0.closeViewP1), for: .touchUpInside)
         self.view?.addSubview(backButtonP1)
     }
 
@@ -177,7 +177,6 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         skView?.presentScene(scene)
     }
 
-
     func playlatinHorn2() -> AVAudioPlayer {
         guard let sound = NSDataAsset(name: "intro1") else {
             //print("sound asset not found")
@@ -192,4 +191,6 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         }
         return player!
     }
+
+
 }
