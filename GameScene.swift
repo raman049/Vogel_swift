@@ -122,32 +122,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let wavef = SKSpriteNode(imageNamed: "wave2")
         let waveg = SKSpriteNode(imageNamed: "wave2")
         let waveSz = CGSize(width: wavea.size.width, height: wavea.size.height)
-        wavea.scale(to: waveSz)
+        wavea.size = waveSz
+       // wavea.scale(to: waveSz)
         wavea.position = CGPoint(x: (Int) (wavea.size.width/2)  , y: (Int)(wavea.size.height/3))
         addChild(wavea)
-        waveb.scale(to: waveSz)
+       // waveb.scale(to: waveSz)
+        waveb.size = waveSz
+        wavec.size = waveSz
+        waved.size = waveSz
+        wavee.size = waveSz
+        wavef.size = waveSz
+        waveg.size = waveSz
+
         waveb.position = CGPoint(x: (Int) (wavea.size.width/2) * 3 - 5 , y: (Int) (wavea.size.height/3))
         addChild(waveb)
-        wavec.scale(to: waveSz)
+      //  wavec.scale(to: waveSz)
         wavec.position = CGPoint(x: (Int) (wavea.size.width/2) * 5 - 10 , y: (Int) (wavea.size.height/3))
         addChild(wavec)
-        waved.scale(to: waveSz)
+     //   waved.scale(to: waveSz)
         waved.position = CGPoint(x: (Int) (wavea.size.width/2) * 7 - 20 , y: (Int) (wavea.size.height/3))
         addChild(waved)
-        wavee.scale(to: waveSz)
+     //   wavee.scale(to: waveSz)
         wavee.position = CGPoint(x: (Int) (wavea.size.width/2) * 9 - 30 , y: (Int) (wavea.size.height/3))
         addChild(wavee)
-        wavef.scale(to: waveSz)
+      //  wavef.scale(to: waveSz)
         wavef.position = CGPoint(x: (Int) (wavea.size.width/2) * 11 - 40 , y: (Int) (wavea.size.height/3))
         addChild(wavef)
-        waveg.scale(to: waveSz)
+     //   waveg.scale(to: waveSz)
         waveg.position = CGPoint(x: (Int) (wavea.size.width/2) * 13 - 40 , y: (Int) (wavea.size.height/3))
         addChild(waveg)
         //add SUn
         let sun = SKSpriteNode(imageNamed: "sun")
         let sunSz = CGSize(width: sun.size.width/2 , height: sun.size.height/2)
-        sun.scale(to: sunSz)
-        sun.zRotation = CGFloat(M_PI/2.0)
+       // sun.scale(to: sunSz)
+        sun.size = sunSz
+        sun.zRotation = CGFloat(.pi/2.0)
         sun.anchorPoint = CGPoint(x:CGFloat(0.5),y:CGFloat(0.5))
         sun.position = CGPoint(x: size.width - sun.size.width - 5, y: size.height - sun.size.height)
         let spin = SKAction.rotate(byAngle: CGFloat.pi, duration: 10)
@@ -178,7 +187,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         bird = SKSpriteNode(imageNamed: "bird1")
         let birdSz = CGSize(width: (bird.size.width/3) * 2, height: (bird.size.height/3) * 2)
         let birdPhysicsSz = CGSize(width: bird.size.width/3, height: bird.size.height/3)
-        bird.scale(to: birdSz)
+        //bird.scale(to: birdSz)
+        bird.size = birdSz
         bird.position = CGPoint(x: self.size.width/3, y: self.size.height/2 - 10 )
         bird.physicsBody = SKPhysicsBody(rectangleOf: birdPhysicsSz)
         bird.physicsBody?.isDynamic = true
@@ -264,7 +274,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             labelHiScore = UILabel(frame: CGRect(x: self.size.width/80 , y: 10, width: 300, height: 20))
             labelHiScore.font = UIFont.init(name: "Georgia-Italic", size: 10)
             labelHiScore.textColor = UIColor.blue
-           // labelHiScore.textAlignment = .right
+            // labelHiScore.textAlignment = .right
             let userDefaults = UserDefaults.standard
             let highscore4 = userDefaults.value(forKey: "highscore")
             let hs = highscore4 as! NSNumber
@@ -272,7 +282,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             labelHiScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 10 + 8, width: 300, height: 20))
             labelHiScoreInt.font = UIFont.init(name: "Georgia-Italic", size: 10)
             labelHiScoreInt.textColor = UIColor.blue
-           // labelHiScoreInt.textAlignment = .right
+            // labelHiScoreInt.textAlignment = .right
             labelHiScore.text = "High Score:"
             labelHiScoreInt.text = "\(hs)"
             self.view?.addSubview(labelHiScore)
@@ -286,7 +296,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             scoreLabel.font = UIFont.init(name:"Georgia-Italic", size: 10)
             labelScoreInt.removeFromSuperview()
             labelScoreInt = UILabel(frame: CGRect(x: self.size.width/80 , y: 26 + 15, width: 150, height: 20))
-           // labelScoreInt.textAlignment = .center
+            // labelScoreInt.textAlignment = .center
             labelScoreInt.textColor = UIColor.blue
             labelScoreInt.font = UIFont.init(name:"Georgia-Italic", size: 15)
             scoreLabel.text = "Your Score:"
@@ -487,7 +497,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         //add Replay button
         let replayImage = UIImage(named: "replay") as UIImage?
         replay = UIButton(type: UIButtonType.custom) as UIButton
-        replay.frame = (frame: CGRect(x: self.size.width - 20 - (replayImage?.size.width)!/3 , y: self.size.height - 10 - (replayImage?.size.height)!/3, width: (replayImage?.size.width)!/3, height: (replayImage?.size.height)!/3))
+        replay.frame =  CGRect(x: self.size.width - 20 - (replayImage?.size.width)!/3 , y: self.size.height - 10 - (replayImage?.size.height)!/3, width: (replayImage?.size.width)!/3, height: (replayImage?.size.height)!/3)
         replay.setImage(replayImage, for: .normal)
         replay.addTarget(self, action: #selector(GameScene.restartMethod), for: .touchUpInside)
         self.view?.addSubview(replay)
@@ -495,23 +505,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let instructionQueImg = UIImage(named: "instructionQue") as UIImage?
         instructionQueBut.removeFromSuperview()
         instructionQueBut   = UIButton(type: UIButtonType.custom) as UIButton
-        instructionQueBut.frame = (frame: CGRect(x: 10, y: self.size.height - 10 - (instructionQueImg?.size.height)!/3, width: (instructionQueImg?.size.width)!/3, height: (instructionQueImg?.size.height)!/3))
+        instructionQueBut.frame =  CGRect(x: 10, y: self.size.height - 10 - (instructionQueImg?.size.height)!/3, width: (instructionQueImg?.size.width)!/3, height: (instructionQueImg?.size.height)!/3)
         instructionQueBut.setImage(instructionQueImg, for: .normal)
         instructionQueBut.addTarget(self, action: #selector(GameScene.popUp), for: .touchUpInside)
         self.view?.addSubview(instructionQueBut)
-    //add gc
+        //add gc
         let gcButtonImage = UIImage(named: "scoreboard") as UIImage?
         gcButton.removeFromSuperview()
         gcButton   = UIButton(type: UIButtonType.custom) as UIButton
-        gcButton.frame = (frame: CGRect(x: 20 + (gcButtonImage?.size.width)!/3 , y: self.size.height - 10 - (gcButtonImage?.size.height)!/3, width: (gcButtonImage?.size.width)!/3, height: (gcButtonImage?.size.height)!/3))
+        gcButton.frame =  CGRect(x: 20 + (gcButtonImage?.size.width)!/3 , y: self.size.height - 10 - (gcButtonImage?.size.height)!/3, width: (gcButtonImage?.size.width)!/3, height: (gcButtonImage?.size.height)!/3)
         gcButton.setImage(gcButtonImage, for: .normal)
         gcButton.addTarget(self, action: #selector(GameScene.showGC), for: .touchUpInside)
         self.view?.addSubview(gcButton)
-    //add fb
+        //add fb
         let fbButtonImage = UIImage(named: "fblogo") as UIImage?
         fbButton.removeFromSuperview()
         fbButton = UIButton(type: UIButtonType.custom) as UIButton
-        fbButton.frame = (frame: CGRect(x: 10 , y: self.size.height - 20 - ((fbButtonImage?.size.height)!/3)*2, width: (fbButtonImage?.size.width)!/3, height: (fbButtonImage?.size.height)!/3))
+        fbButton.frame = CGRect(x: 10 , y: self.size.height - 20 - ((fbButtonImage?.size.height)!/3)*2, width: (fbButtonImage?.size.width)!/3, height: (fbButtonImage?.size.height)!/3)
         fbButton.setImage(fbButtonImage, for: .normal)
         fbButton.addTarget(self, action: #selector(GameScene.showFacebook), for: .touchUpInside)
         self.view?.addSubview(fbButton)
@@ -541,7 +551,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let backButtonImg = UIImage(named: "close") as UIImage?
         backButton.removeFromSuperview()
         backButton   = UIButton(type: UIButtonType.custom) as UIButton
-        backButton.frame = (frame: CGRect(x: 10, y: 10, width: (backButtonImg?.size.width)!/3, height: (backButtonImg?.size.height)!/3))
+        backButton.frame = CGRect(x: 10, y: 10, width: (backButtonImg?.size.width)!/3, height: (backButtonImg?.size.height)!/3)
         backButton.setImage(backButtonImg, for: .normal)
         backButton.removeFromSuperview()
         backButton.addTarget(self, action: #selector(GameScene.closeView), for: .touchUpInside)
@@ -589,7 +599,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let randomPosition2 = CGFloat(arc4random_uniform(UInt32(heighta)))
         let planeSz = CGSize(width: plane.size.width * 6/5 , height: plane.size.height * 6/5 )
         let planePhysicsSz = CGSize(width: plane.size.width/2 , height: plane.size.height/4)
-        plane.scale(to: planeSz)
+       // plane.scale(to: planeSz)
+        plane.size = planeSz
         plane.position = CGPoint(x: self.size.width + 50 + plane.size.width/3 , y: wavea.size.height + randomPosition2 )
         plane.physicsBody = SKPhysicsBody(rectangleOf: planePhysicsSz)
         plane.physicsBody?.affectedByGravity = false
@@ -608,7 +619,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let heighta = self.size.height - wavea.size.height * 2
         let planeSz = CGSize(width: plane2.size.width * 6/5 , height: plane2.size.height * 6/5 )
         let planePhysicsSz = CGSize(width: plane2.size.width/2 , height: plane2.size.height/4)
-        plane2.scale(to: planeSz)
+       // plane2.scale(to: planeSz)
+        plane2.size = planeSz
         let randomPosition3 = CGFloat(arc4random_uniform(150))
         let randomPosition4 = CGFloat(arc4random_uniform(UInt32(heighta)))
         plane2.position = CGPoint(x: self.size.width + 50 + plane2.size.width/3 + randomPosition3, y: wavea.size.height + randomPosition4 )
@@ -631,7 +643,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let cloudImageSz = CGSize(width: cloud.size.width/2 , height:cloud.size.height/2)
         let cloudPhysicsSz = CGSize(width: cloud.size.width/4 , height: cloud.size.height/6)
         let randomPosition2 = CGFloat(arc4random_uniform(UInt32((Float)(self.size.height/6))))
-        cloud.scale(to: cloudImageSz)
+       // cloud.scale(to: cloudImageSz)
+        cloud.size = cloudImageSz
         cloud.position = CGPoint(x: self.size.width + cloud.size.width/2 + randomPosition2 , y: self.size.height  - randomPosition2 )
         cloud.physicsBody = SKPhysicsBody(rectangleOf: cloudPhysicsSz)
         cloud.physicsBody?.affectedByGravity = false
@@ -651,7 +664,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let cloudPhysicsSz = CGSize(width: cloud.size.width/4 , height: cloud.size.height/6)
         let randomPosition2 = CGFloat(arc4random_uniform(UInt32((Float)(self.size.height/6))))
         let randomPosition3 = CGFloat(arc4random_uniform(UInt32((Float)((self.size.width) * 2))))
-        cloud.scale(to: cloudImageSz)
+        cloud.size = cloudImageSz
         cloud.position = CGPoint(x: self.size.width + cloud.size.width/2 + randomPosition3 , y: self.size.height  - randomPosition2 )
         cloud.physicsBody = SKPhysicsBody(rectangleOf: cloudPhysicsSz)
         cloud.physicsBody?.affectedByGravity = false
@@ -671,7 +684,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let cloudPhysicsSz = CGSize(width: cloud.size.width/4 , height: cloud.size.height/6)
         let randomPosition2 = CGFloat(arc4random_uniform(UInt32((Float)(self.size.height/5))))
         let randomPosition3 = CGFloat(arc4random_uniform(UInt32((Float)((self.size.height) * 3))))
-        cloud.scale(to: cloudImageSz)
+        cloud.size = cloudImageSz
         cloud.position = CGPoint(x: self.size.width + cloud.size.width/2 + randomPosition3 , y: self.size.height  - randomPosition2 )
         cloud.physicsBody = SKPhysicsBody(rectangleOf: cloudPhysicsSz)
         cloud.physicsBody?.affectedByGravity = false
@@ -689,7 +702,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let ship = SKSpriteNode(imageNamed: "ship2")
         let shipSz = CGSize(width: ship.size.width * 3/2 , height: ship.size.height * 3/2)
         let shipPhysicsSz = CGSize(width: ship.size.width , height: ship.size.height/3)
-        ship.scale(to: shipSz)
+        ship.size = shipSz
         ship.position = CGPoint(x:ship.size.width/2 - 250 , y: 95 )
         ship.physicsBody = SKPhysicsBody(rectangleOf:shipPhysicsSz)
         ship.physicsBody?.affectedByGravity = false
@@ -707,7 +720,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let fly = SKSpriteNode(imageNamed: "fly2")
         let flySz = CGSize(width: fly.size.width/4 , height: fly.size.height/4 )
         let flyPhysicsSz = CGSize(width: fly.size.width/5, height: fly.size.height/5)
-        fly.scale(to: flySz)
+        fly.size = flySz
         let heighta = self.size.height - wavea.size.height * 2
         let randomPosition2 = CGFloat(arc4random_uniform(UInt32(heighta)))
         fly.position = CGPoint(x: self.size.width + 150 , y: wavea.size.height + randomPosition2 )
@@ -730,7 +743,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let tree = SKSpriteNode(imageNamed: "tree")
         let treeSz = CGSize(width: tree.size.width  , height: tree.size.height)
         let treePhysicsSz = CGSize(width: tree.size.width/10, height: tree.size.height/2)
-        tree.scale(to: treeSz)
+        tree.size = treeSz
         tree.zPosition = -3
         tree.physicsBody = SKPhysicsBody(rectangleOf:treePhysicsSz)
         tree.position = CGPoint(x: tree.size.width/2 + self.size.width  , y: 100 )
@@ -748,7 +761,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let treePineapple = SKSpriteNode(imageNamed: "pineappletree")
         let treeSz = CGSize(width: treePineapple.size.width/2  , height: treePineapple.size.height/2)
         let treePhysicsSz = CGSize(width: treePineapple.size.width/4, height: treePineapple.size.height/4)
-        treePineapple.scale(to: treeSz)
+        treePineapple.size = treeSz
         treePineapple.zPosition = 1
         treePineapple.physicsBody = SKPhysicsBody(rectangleOf:treePhysicsSz)
         let randomPositionPT = CGFloat(arc4random_uniform(250))
@@ -767,7 +780,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         waveNode = SKNode()
         let wave = SKSpriteNode(imageNamed: "wave2")
         let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
-        wave.scale(to: waveSz)
+        wave.size = waveSz
         wave.zPosition = 3
         wave.position = CGPoint(x: (wave.size.width/2) - 50 , y: (wave.size.height/3))
         //wave.position = CGPoint(x: wave.size.width/2 + self.size.width  , y: 100 )
@@ -779,7 +792,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         waveNode = SKNode()
         let wave = SKSpriteNode(imageNamed: "wave2")
         let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
-        wave.scale(to: waveSz)
+        wave.size = waveSz
         wave.zPosition = 3
         wave.position = CGPoint(x: (Int) (wave.size.width/2) * 3 - 55 , y: (Int) (wave.size.height/3))
         waveNode.addChild(wave)
@@ -790,7 +803,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         waveNode = SKNode()
         let wave = SKSpriteNode(imageNamed: "wave2")
         let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
-        wave.scale(to: waveSz)
+        wave.size = waveSz
         wave.zPosition = 3
         wave.position = CGPoint(x: (Int) (wave.size.width/2) * 5 - 60 , y: (Int) (wave.size.height/3))
         waveNode.addChild(wave)
@@ -801,7 +814,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         waveNode = SKNode()
         let wave = SKSpriteNode(imageNamed: "wave2")
         let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
-        wave.scale(to: waveSz)
+        wave.size = waveSz
         wave.zPosition = 3
         wave.position = CGPoint(x: (Int) (wave.size.width/2) * 7 - 70 , y: (Int) (wave.size.height/3))
         waveNode.addChild(wave)
@@ -812,7 +825,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         waveNode = SKNode()
         let wave = SKSpriteNode(imageNamed: "wave2")
         let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
-        wave.scale(to: waveSz)
+        wave.size = waveSz
         wave.zPosition = 3
         wave.position = CGPoint(x: (Int) (wave.size.width/2) * 9 - 30 , y: (Int) (wave.size.height/3))
         waveNode.addChild(wave)
@@ -823,7 +836,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         waveNode = SKNode()
         let wave = SKSpriteNode(imageNamed: "wave2")
         let waveSz = CGSize(width: wave.size.width, height: wave.size.height)
-        wave.scale(to: waveSz)
+        wave.size = waveSz
         wave.zPosition = 3
         wave.position = CGPoint(x: (Int) (wave.size.width/2) * 11 - 30 , y: (Int) (wave.size.height/3))
         waveNode.addChild(wave)
@@ -836,7 +849,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         shark.removeFromParent()
         shark = SKSpriteNode(imageNamed: "shark")
         let sharkSz = CGSize(width: shark.size.width , height: shark.size.height)
-        shark.scale(to: sharkSz)
+        shark.size = sharkSz
         shark.physicsBody?.isDynamic = true
         shark.physicsBody?.affectedByGravity = true
         shark.position = CGPoint(x: bird.position.x - 100  , y: bird.position.y - 100  )
@@ -853,7 +866,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         lightning.removeFromParent()
         lightning = SKSpriteNode(imageNamed: "lightning")
         let lightningSz = CGSize(width: lightning.size.width , height: lightning.size.height)
-        lightning.scale(to: lightningSz)
+        lightning.size = lightningSz
         lightning.physicsBody?.isDynamic = true
         lightning.position = CGPoint(x: bird.position.x , y: bird.position.y + 20 )
         lightning.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
@@ -872,7 +885,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             fruit = SKSpriteNode(imageNamed: "pineapple")
         }
         let fruitSz = CGSize(width: fruit.size.width , height: fruit.size.height)
-        fruit.scale(to: fruitSz)
+        fruit.size = fruitSz
         fruit.physicsBody?.isDynamic = true
         fruit.position = CGPoint(x: bird.position.x + 5 , y: bird.position.y - 5 )
         fruit.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
@@ -894,7 +907,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         boom.removeFromParent()
         boom = SKSpriteNode(imageNamed: "crash")
         let boomSz = CGSize(width: boom.size.width/2 , height: boom.size.height/2)
-        boom.scale(to: boomSz)
+        boom.size = boomSz
         boom.physicsBody?.isDynamic = true
         boom.position = CGPoint(x: bird.position.x , y: bird.position.y)
         boom.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
@@ -925,7 +938,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
             fruitBonus = false
         }
         else{
-             bonus.text = "+50"
+            bonus.text = "+50"
         }
         self.view?.addSubview(bonus)
         Timer.scheduledTimer(timeInterval: TimeInterval(0.2), target: self, selector: #selector(GameScene.removeBonuse), userInfo: nil, repeats: false)
@@ -1168,13 +1181,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     func showFacebook() {
         if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
-        let mySLComposerSheet = SLComposeViewController(forServiceType: SLServiceTypeFacebook)
+            let mySLComposerSheet = SLComposeViewController(forServiceType: SLServiceTypeFacebook)
             adBannerView.removeFromSuperview()
             screenShot = captureScreen()!
 
-           // mySLComposerSheet?.setInitialText("vogel")
-              mySLComposerSheet?.add(screenShot)
-          // mySLComposerSheet?.add(URL(string: "http://www.vogelplay.com/")! as URL!)
+            // mySLComposerSheet?.setInitialText("vogel")
+            mySLComposerSheet?.add(screenShot)
+            // mySLComposerSheet?.add(URL(string: "http://www.vogelplay.com/")! as URL!)
 
             let VC = self.view?.window?.rootViewController
             VC?.present(mySLComposerSheet!, animated: true, completion: nil)
@@ -1212,7 +1225,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
 
     func banner() {
         adBannerView.removeFromSuperview()
-       adBannerView.adSize = kGADAdSizeSmartBannerLandscape
+        adBannerView.adSize = kGADAdSizeSmartBannerLandscape
         self.view?.addSubview(adBannerView)
         adBannerView.adUnitID = "ca-app-pub-7941365967795667/9898703231"
         let currentViewController:UIViewController=UIApplication.shared.keyWindow!.rootViewController!
@@ -1221,16 +1234,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         let request2 = GADRequest()
         request2.testDevices = [ kGADSimulatorID ]
         adBannerView.load(request2)
-
+        
     }
-
+    
     func captureScreen() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions((view?.bounds.size)!, true, UIScreen.main.scale)
         view?.layer.render(in: UIGraphicsGetCurrentContext()!)
-
+        
         image0 = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image0
     }
-
+    
 }
