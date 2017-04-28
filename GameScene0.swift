@@ -177,19 +177,30 @@ class GameScene0: SKScene, GKGameCenterControllerDelegate{
         skView?.presentScene(scene)
     }
 
+//    func playlatinHorn2() -> AVAudioPlayer {
+//
+//        guard let sound = NSDataAsset(name: "intro1") else {
+//            //print("sound asset not found")
+//            return player!
+//        }
+//        do {
+//            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+//            try AVAudioSession.sharedInstance().setActive(true)
+//            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
+//        } catch let error as NSError {
+//            print("error: \(error.localizedDescription)")
+//        }
+//        return player!
+//    }
+    var audioPlayer = AVAudioPlayer()
     func playlatinHorn2() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "intro1") else {
-            //print("sound asset not found")
-            return player!
-        }
-        do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
-        } catch let error as NSError {
+        do{
+            audioPlayer = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "intro1", ofType: "wav")!))
+            audioPlayer.prepareToPlay()
+        }catch let error as NSError{
             print("error: \(error.localizedDescription)")
         }
-        return player!
+        return audioPlayer
     }
 
 

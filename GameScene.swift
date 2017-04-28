@@ -85,6 +85,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     var fbButton = UIButton()
     var instructionQueBut = UIButton()
     var player: AVAudioPlayer?
+    var audioPlayer: AVAudioPlayer?
     var playerLight: AVAudioPlayer?
     var playerBubble: AVAudioPlayer?
     var highScore = Int()
@@ -997,83 +998,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
         }
     }
 
-
     func playlatinHorn() -> AVAudioPlayer {
-        guard let soundlatinHorn = NSDataAsset(name: "intro1") else {
-            //print("sound asset not found")
-            return player!
-        }
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-            player = try AVAudioPlayer(data: soundlatinHorn.data, fileTypeHint: AVFileTypeMPEGLayer3)
+            audioPlayer = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "intro1", ofType: "wav")!))
+            audioPlayer?.prepareToPlay()
         } catch let error as NSError {
             print("error: \(error.localizedDescription)")
         }
-        return player!
+        return audioPlayer!
     }
+
     func playElectric() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "soundElectric") else {
-            print("sound asset not found")
-            return playerLight!
-        }
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-
-            playerLight = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
-
-            // player!.play()
+            playerLight = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "sound_electric", ofType: "wav")!))
+            playerLight?.prepareToPlay()
         } catch let error as NSError {
             print("error: \(error.localizedDescription)")
         }
         return playerLight!
     }
     func playBubble() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "sharkSound") else {
-            print("sound asset not found")
-            return playerBubble!
-        }
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-
-            playerBubble = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
-
+            playerBubble = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "sharkSound", ofType: "wav")!))
+            playerBubble?.prepareToPlay()
         } catch let error as NSError {
             print("error: \(error.localizedDescription)")
         }
         return playerBubble!
     }
     func playBird() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "soundBird") else {
-            print("sound asset not found")
-            return player!
-        }
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-
-            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
-
-            // player!.play()
+            player = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "sound_bird", ofType: "wav")!))
+            player?.prepareToPlay()
         } catch let error as NSError {
             print("error: \(error.localizedDescription)")
         }
         return player!
     }
     func playBoom() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "blast") else {
-            print("sound asset not found")
-            return player!
-        }
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-
-            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
-
-            // player!.play()
+            player = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "blast", ofType: "wav")!))
+            player?.prepareToPlay()
         } catch let error as NSError {
             print("error: \(error.localizedDescription)")
         }
@@ -1081,51 +1046,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelega
     }
 
     func playIsland() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "intro2") else {
-            print("sound asset not found")
-            return player!
-        }
+
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-
-            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
-
-            // player!.play()
+            player = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "sound_island", ofType: "wav")!))
+            player?.prepareToPlay()
         } catch let error as NSError {
             print("error: \(error.localizedDescription)")
         }
         return player!
     }
     func playTree() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "coconut") else {
-            print("sound asset not found")
-            return player!
-        }
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-
-            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
-
-            // player!.play()
-        } catch let error as NSError {
+            player = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "coconut", ofType: "wav")!))
+            player?.prepareToPlay()
+        }catch let error as NSError {
             print("error: \(error.localizedDescription)")
         }
         return player!
     }
     func playFly() -> AVAudioPlayer {
-        guard let sound = NSDataAsset(name: "fly") else {
-            print("sound asset not found")
-            return player!
-        }
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-
-            player = try AVAudioPlayer(data: sound.data, fileTypeHint: AVFileTypeMPEGLayer3)
-
-            // player!.play()
+            player = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "fly", ofType: "wav")!))
+            player?.prepareToPlay()
         } catch let error as NSError {
             print("error: \(error.localizedDescription)")
         }
